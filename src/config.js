@@ -1,6 +1,7 @@
 export var ENV = process.env.NODE_ENV==="production"?true:false;
 export var port = 3000;
 export var signed = "jJkK37aAbBcCdDeEXy89Y45Z_-6sStfFgGhHiIlLmMoOpPqQurRTuUvVwWxz";
+export var uploadHost = ENV?"http://127.0.0.1:3000":"";
 export var db = {
     type:"mysql",
     "mysql":{

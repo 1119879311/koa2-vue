@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : FFS
-Source Server Version : 50549
+Source Server         : root
+Source Server Version : 50617
 Source Host           : localhost:3306
 Source Database       : thinkjs
 
 Target Server Type    : MYSQL
-Target Server Version : 50549
+Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2018-12-16 19:08:43
+Date: 2019-01-30 17:34:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -49,18 +49,61 @@ CREATE TABLE `tk_auth` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '权限id',
   `name` varchar(255) NOT NULL COMMENT '权限名称',
   `url` varchar(255) NOT NULL COMMENT '链接地址',
+  `g_name` varchar(255) NOT NULL DEFAULT '默认分组' COMMENT '分组默认',
   `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态 0 | 1',
   `create_time` varchar(255) NOT NULL COMMENT '创建时间',
   `update_time` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  KEY `g_id` (`g_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tk_auth
 -- ----------------------------
-INSERT INTO `tk_auth` VALUES ('2', '添加行为', 'admin/auth/add', '1', '1537617221727', '1537617221727');
-INSERT INTO `tk_auth` VALUES ('3', '添加用户', '/api/rbac/user/add', '1', '1543750294204', '1543750294204');
-INSERT INTO `tk_auth` VALUES ('4', '编辑用户', '/api/rbac/user/edit', '1', '1543750491972', '1543750491972');
+INSERT INTO `tk_auth` VALUES ('2', '添加行为', '/api/rbac/auth/add', '默认分组', '1', '1537617221727', '1537617221727');
+INSERT INTO `tk_auth` VALUES ('3', '添加用户', '/api/rbac/user/add', '权限管理', '1', '1543750294204', '1543750294204');
+INSERT INTO `tk_auth` VALUES ('4', '编辑用户', '/api/rbac/user/edit', '权限管理', '1', '1543750491972', '1543750491972');
+INSERT INTO `tk_auth` VALUES ('5', '编辑添行为', '/api/rbac/auth/edit', '权限管理', '1', '1546425096159', '1546425096160');
+
+-- ----------------------------
+-- Table structure for `tk_auth_group`
+-- ----------------------------
+DROP TABLE IF EXISTS `tk_auth_group`;
+CREATE TABLE `tk_auth_group` (
+  `gid` int(48) NOT NULL,
+  `gname` varchar(255) NOT NULL DEFAULT '其他分组' COMMENT '分组描述',
+  `gstatus` int(12) NOT NULL DEFAULT '1' COMMENT '状态1：激活，2：禁止',
+  `gcreate_time` varchar(255) NOT NULL,
+  PRIMARY KEY (`gid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of tk_auth_group
+-- ----------------------------
+INSERT INTO `tk_auth_group` VALUES ('1', '其他', '1', '11213123132');
+INSERT INTO `tk_auth_group` VALUES ('2', '权限管理', '0', '13245646513');
+
+-- ----------------------------
+-- Table structure for `tk_auth_muen`
+-- ----------------------------
+DROP TABLE IF EXISTS `tk_auth_muen`;
+CREATE TABLE `tk_auth_muen` (
+  `id` int(48) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '''''',
+  `title` varchar(48) NOT NULL DEFAULT '''''',
+  `componed` varchar(48) NOT NULL DEFAULT '''''',
+  `url` varchar(255) NOT NULL DEFAULT '''''',
+  `is_muen` smallint(1) NOT NULL DEFAULT '2',
+  `is_state` smallint(1) NOT NULL DEFAULT '1' COMMENT '1默认开启，2 ，禁止',
+  `parent_id` int(48) NOT NULL DEFAULT '0' COMMENT '0没有父级',
+  `create_time` varchar(48) NOT NULL DEFAULT '''''',
+  `update_time` varchar(48) NOT NULL DEFAULT '''''',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of tk_auth_muen
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `tk_cate`

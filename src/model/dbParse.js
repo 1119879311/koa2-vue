@@ -112,6 +112,7 @@ class parse extends hepler{
      * @param {*} val 
      */
     getWhereMinx(val){
+      
         var _this = this;
         if(!val) return '';
         if(this.isString(val)) return val;
@@ -119,17 +120,22 @@ class parse extends hepler{
             return __complexObj(val)
 
         }else if(this.isArray(val)){
+            
             var _logic = this.getLogic(val[2]);
             val.splice(2);
             var whereArr = [];
             val.forEach(itme=>{
                 if(_this.isObject(itme)){
-                    whereArr.push(' ( '+__complexObj(itme)+ ' ) ');
+                    console.log(__complexObj(itme))
+                    if(__complexObj(itme))  whereArr.push(' ( '+__complexObj(itme)+ ' ) ');
                 }else if(_this.isString(itme)){
                     whereArr.push(' ( '+itme+ ' ) ');
                 }
             })
-          return  whereArr.join(' '+_logic+' ')
+            if(whereArr.length){
+                return  whereArr.join(' '+_logic+' ')
+            }
+            return '';
         }
         
         function __complexObj(obj){
@@ -383,7 +389,7 @@ class parse extends hepler{
            var flag =  opt.every(itme=>_this.isString(itme));
            orderStr =  flag?opt.join(","):"";
         }
-        return orderStr ? ' order '+ orderStr :'' ;
+        return orderStr ? ' order by '+ orderStr :'' ;
     }
     /**
      * 
@@ -425,7 +431,7 @@ class parse extends hepler{
     }
     parseUnion(opt){
         if(!opt) return '';
-      
+        return opt;
     }
     parseLock(opt){
         if(!opt) return '';

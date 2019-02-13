@@ -4,7 +4,7 @@ import logicRole from "../../logic/role";
 import roleAuthModel from "../../model/tk_role_auth";
 import roleModel from "../../model/tk_role";
 
-@Controller("/api/rbac/role")
+@Controller("/rbac/role")
 export  default class extends base {
     constructor() {
         super();

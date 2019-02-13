@@ -4,7 +4,7 @@ import URModel from "../../model/tk_user_role";
 import logicUser from "../../logic/user";
 
 
-@Controller("/api/rbac/user")
+@Controller("/rbac/user")
 export  default class extends base {
      constructor(){
          super();
@@ -15,7 +15,9 @@ export  default class extends base {
          var {id,pageNum,pageSize} = ctx.request.query;
          if(id){
              var res =await ctx.model.table("tk_user").noField("password").where({id}).findOne();
+
              res?res["user_role"]=await URModel.getRole(id):res;
+             
              ctx.body = await { code:200, state:true, mssage:"select add success",result:res}
          }else{
              ctx.body = await ctx.model.table("tk_user").noField("password").pageSelect(pageNum,pageSize);

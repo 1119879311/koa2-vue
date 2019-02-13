@@ -3,16 +3,42 @@ export default {
     _proto_: (type) => {
         return Object.prototype.toString.call(type)
     },
-    objLen: (obj) => { //一维对象的个数
-        if (Object.prototype.toString.call(obj) == '[object Object]') {
-            var count = 0
-            for (var i in obj) {
-                count++
-            }
-            return count
-
-        }
-        return 0
+    isNull:(val)=>{
+        return this._proto_(val)=="[object Null]";
+    },
+    isFunction:(val)=>{
+        return this._proto_(val)=="[object Function]";
+    },
+    isUndefined(val){
+        return this._proto_(val)=="[object Undefined]";
+    },
+    isNumber:(val)=>{
+        return this._proto_(val)=="[object Number]";
+    },
+    isSymbol:(val)=>{
+        return this._proto_(val)=="[object Symbol]";
+    },
+    isBooleam:(val)=>{
+        return this._proto_(val)=="[object Booleam]";
+    },
+    isString:(val)=>{
+        return this._proto_(val)=="[object String]";
+    },
+    isObject(val){
+        return this._proto_(val)=="[object Object]";
+    },
+    isArray(val){
+        return this._proto_(val)=="[object Array]";
+    },
+    isStringNumber(val){
+        return this.isString(val)||this.isNumber(val);
+    },
+    _proto_(type) {
+        return Object.prototype.toString.call(type)
+    },
+    objLen:(val)=>{
+        if(this.isObject(val)) return (Object.keys(val)).length;
+        return 0;
     },
     splitobj: (obj = {}, live = "=") => {//对象键值拼接
         var str = ''
@@ -117,14 +143,19 @@ export default {
         return result
     },
     //递归找子集，返回一个数组(子集每一项的id)
-    filterChrildId: function (data = [], id = "id", pid = "pid", idNum = 0) {//默认没有子集，返回空数组
+    filterChrildId: function (data = [], id = "id", pid = "pid", idNum = 0,field=null) {//默认没有子集，返回空数组
+       var _this = this;
         if (!idNum || idNum == 0) return [];
         var arrId = [];
         if (Object.prototype.toString.call(data) !== '[object Array]') return [];
         data.forEach(ele => {
             if (ele[pid] == idNum) {
-                arrId.push(ele[id]);
-                arrId = arrId.concat(this.filterChrildId(data, id, pid, ele[id]))
+                if(field){
+                    arrId.push(ele);
+                }else{
+                    arrId.push(ele[id]);
+                }               
+                arrId = arrId.concat(_this.filterChrildId(data, id, pid, ele[id],field))
             }
         });
         return arrId;

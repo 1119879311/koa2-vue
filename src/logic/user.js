@@ -12,7 +12,7 @@ export default new class {
             name:_this.veryname ,
             password: _this.verypass,
         })
-        console.log(data)
+        // console.log(data)
         var resVali = Joi.validate(data,schema,{allowUnknown: true});
         if(resVali.error) return  await {code:-101,mssage:resVali.error.message};
         return null

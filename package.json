@@ -20,11 +20,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "formidable": "^1.2.1",
     "joi": "^14.0.4",
     "jsonwebtoken": "^8.3.0",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
+    "koa2-cors": "^2.0.6",
     "mysql": "^2.16.0"
   },
   "devDependencies": {

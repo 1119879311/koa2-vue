@@ -6,6 +6,7 @@ export default class {
     @POST("/")
     async login(ctx, next) {
         let {name, password} = ctx.request.body;
+        console.log(ctx.request.body)
         let logicRes = await logicUser.login({name, password});
         if (logicRes) return ctx.body = await logicRes;
         let userInfo = await ctx.model.table("tk_user").where({name: name, password: password,status:1}).findOne();
