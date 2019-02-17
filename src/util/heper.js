@@ -163,6 +163,7 @@ export default {
     },
     // 递归添加子集的数据
     diGuiAdd:function(data = [],idField="id",pidField="pid",countField = "count"){   
+        if (Object.prototype.toString.call(data) !== '[object Array]') return data;
         var cloneData = JSON.parse(JSON.stringify(data));
          function fn(cloneData,cid,count){
              var counts = count ;

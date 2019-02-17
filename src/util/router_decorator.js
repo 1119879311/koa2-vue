@@ -1,5 +1,5 @@
 import koaRouter from 'koa-router';
-
+import { routerPrefix } from "../config";
 const router = new koaRouter();
 
 const RequestMethod = {
@@ -11,7 +11,7 @@ const RequestMethod = {
 }
 
 function Controller(prefix) {
-    router.prefixed = prefix ? prefix.replace(/\/+$/g, "") : '';
+    router.prefixed =routerPrefix+(prefix ? prefix.replace(/\/+$/g, "") : '');
     return (target) => {
         target.router = router;
         let obj = new target;

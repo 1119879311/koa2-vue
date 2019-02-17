@@ -1,6 +1,7 @@
 import sqlParse from "./dbParse";
 import mysql from "mysql";
 import { db as config} from '../config';
+import { resolve } from "dns";
 var dbconfig = config[config["type"]]
 class connect{
     constructor(dbconfig){
@@ -37,12 +38,44 @@ class connect{
             })
         })
     }
+    // 事务
+    transaction(sqlArr){
+        var _this = this;
+        return new Promise((resolve,reject)=>{
+            _this.pool.getConnection((err,coms)=>{
+                if(err){
+                    reject("connect fail" +err);
+                    return 
+                }
+                coms.beginTransaction(err=>{
+                    if(err){
+                        reject("connect fail" +err);
+                        return 
+                    }
+                   for(let i =0;i<sqlArr.length;i++){
+                        _this.execsql(sqlArr[i]).catch(err=>{
+                            coms.rollback(()=>{ reject(err) })
+                        })
+                   }
+                   coms.commit(err=>{
+                       if(err){
+                           coms.rollback(()=>{reject(err)})
+                       }
+                   })
+                   console.log("Transaction");
+                   resolve("Transaction complete")
+                   coms.release();
+                })
+            })
+        })
+    }
 }
 
 
 class model extends connect{
     constructor(){
         super(dbconfig)
+        this.build =false;
         this.options = {};
     }
     static instances(){
@@ -53,6 +86,15 @@ class model extends connect{
     }
     async error(err){
          return await {code:500,error:err,status:false}
+    }
+    setInit(){
+        this.options = {};
+        this.build = false;
+        return this
+    }
+    buildSql(){
+        this.build =true;
+        return this;
     }
     clearOtions(){
         this.options = {};
@@ -98,17 +140,17 @@ class model extends connect{
         this.options.union = val;
         return this
     }
-    async buildSql(){
-        await this.getNoField();
-        var sql =  await sqlParse.parseSelectSql(this.options);
-        await this.clearOtions();
-        return sql
-    }
+    // async buildSql(){
+    //     await this.getNoField();
+    //     var sql =  await sqlParse.parseSelectSql(this.options);
+    //     await this.clearOtions();
+    //     return sql
+    // }
     async getNoField(){
         if(!this.options.noField) return '';
         if(sqlParse.isString(this.options.field)) this.options.field = this.options.field.split(',');
         if(!sqlParse.isArray(this.options.field)) this.options.field = [];
-        if(this.options.noField&&sqlParse.isString(this.options.noField)){
+        if(sqlParse.isString(this.options.noField)){
             this.options.noField =  this.options.noField.split(",");
         }
         if(sqlParse.isArray(this.options.noField)&&this.options.noField.length){
@@ -130,17 +172,19 @@ class model extends connect{
      *  @param return string
      * */
     async select(){
+        await this.getNoField();
+        var sql = await sqlParse.parseSelectSql(this.options);
+        if(this.build){
+           await this.setInit();
+            return await sql;
+        }
+        await this.setInit();
         try {
-            await this.getNoField();
-            var res = await this.execsql(await sqlParse.parseSelectSql(this.options));
-            this.options = await {};
+            var res = await this.execsql(sql);
             return await res ;
         } catch (error) {
-            this.options =await {};
             return await  this.error(error);
         }
-       
-        
     }
     async findOne(){
         var res =await this.select();
@@ -154,19 +198,23 @@ class model extends connect{
      * @param {string|object|array} opt 
      * @return {promise} string
      */
-    async add(opt,replace){   
+    async add(opt,replace){  
+        this.options.values = opt; 
+        var sql = await sqlParse.parseInsertSql(this.options,replace)
+        if(this.build){
+            await this.setInit();
+            return await sql;
+        }
+        await this.setInit();
         try {
-            this.options.values = opt;
-            var res = await this.execsql(sqlParse.parseInsertSql(this.options,replace));
-            this.options = {};
+            var res = await this.execsql(sql);
             return await res.insertId?res.insertId:0;
         } catch (error) {
-            this.options = {};
             return await  this.error(error);            
         }
        
     }
-    async update(val,options){
+    async update(val,options,isBuild=true){
         this.options.values = val;
         if(sqlParse.isObject(options))  this.options = Object.assign(this.options,options||{});
         if(!this.options.where){
@@ -177,12 +225,16 @@ class model extends connect{
             console.error(new Error("updata data is must object"));
             return await  this.error("updata data is must object")
         }
+        var sql = sqlParse.parseUpdateSql(this.options);
+        if(this.build){
+            await this.setInit();
+            return await sql;
+        }
+        await this.setInit();
         try {
-            var res = await this.execsql(sqlParse.parseUpdateSql(this.options));
-            this.options = {};
+            var res = await this.execsql(sql);           
             return await res.affectedRows?res.affectedRows:0;
         } catch (error) {
-            this.options = {};
             return await  this.error(error); 
         }
         
@@ -226,12 +278,16 @@ class model extends connect{
                   }
               }
           })
-          var whenArr = [];
-          for (var keys in optArr) {
-            whenArr.push(`${optArr[keys].join(" ")}`);
-          }
-          var sqlStr=`update ${this.options.table} set ${whenArr.join(',')} where id in (${whereArr.join(",")})`;
-          this.options = {};        
+        var whenArr = [];
+        for (var keys in optArr) {
+        whenArr.push(`${optArr[keys].join(" ")}`);
+        }
+        var sqlStr=`update ${this.options.table} set ${whenArr.join(',')} where id in (${whereArr.join(",")})`;
+        if(this.build){
+            await this.setInit();
+            return await sqlStr;
+        }
+        await this.setInit();
         try {
             var res = await this.execsql(sqlStr);
             return true;
@@ -271,17 +327,22 @@ class model extends connect{
      * 
      * @param {*} Boolean 
      */
-    async delete(){
+    async delete(isBuild=true){
       
         if(!this.options.where){
             console.error(new Error("delete miss where or if all delete where  parameter  is true"));
             return await  this.error("delete miss where or if all delete where  parameter  is true")
         };
-        var res = await this.execsql(sqlParse.parseDeleteSql(this.options));
-        this.options = {};
+        var sql = sqlParse.parseDeleteSql(this.options);
+        if(this.build){
+            await this.setInit();
+            return await sql;
+        }
+        await this.setInit();
+        var res = await this.execsql(sql);
         return await res.affectedRows?res.affectedRows:0;
     }
-    async polyType({type,typeVal,flag},isBuild=true){
+    async polyType({type,typeVal,flag}){
         this.options.type = type;
         this.options.typeVal = typeVal;
         var sql = "";
@@ -293,17 +354,28 @@ class model extends connect{
         }else{
             sql = sqlParse.parseFindTypeSql(this.options);
         }
-        this.options = {};
-        if(sql&&isBuild){
-            try {
-                var res = await this.execsql(sql);
-                return await res.length?res:{};
-            } catch (error) {
-                return await this.error(error)
-            }
-        }else{
-            return sql;
+        if(this.build){
+            await this.setInit();
+            return await sql;
         }
+        await this.setInit();
+        try {
+            var res = await this.execsql(sql);
+            return await res.length?res:{};
+        } catch (error) {
+            return await this.error(error)
+        }
+        // this.options = {};
+        // if(sql&&isBuild){
+        //     try {
+        //         var res = await this.execsql(sql);
+        //         return await res.length?res:{};
+        //     } catch (error) {
+        //         return await this.error(error)
+        //     }
+        // }else{
+        //     return sql;
+        // }
       
     }
     async min(val,isBuild = true){

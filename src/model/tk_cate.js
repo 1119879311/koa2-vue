@@ -6,7 +6,7 @@ export default class index{
         var arrWhere = ["a.cid=c.id"];
         // 默认是1， 全部是0
         a_status==0?arrWhere:(a_status?arrWhere.push({"a.status":a_status}):arrWhere.push({"a.status":1}));
-        var coutSql = await model.table("tk_article as a").where(arrWhere).count("a.id",false);
+        var coutSql = await model.table("tk_article as a").where(arrWhere).buildSql().count("a.id");
         // 默认是1， 全部是0
         var cateWhere = c_status==0?{}:(c_status?{"c.status":c_status}:{"c.status":1});
         
