@@ -1,5 +1,5 @@
 import koaRouter from 'koa-router';
-import { routerPrefix } from "../config";
+import { routerPrefix } from "../../config";
 const router = new koaRouter();
 
 const RequestMethod = {

@@ -1,4 +1,4 @@
-import {Controller, GET, POST} from "../../util/router_decorator";
+import {Controller, POST, GET} from "../../lib/router";
 import base from "../base";
 import logicRole from "../../logic/role";
 import roleAuthModel from "../../model/tk_role_auth";

@@ -1,4 +1,4 @@
-import {Controller, GET, POST} from "../../util/router_decorator";
+import {Controller, POST, GET} from "../../lib/router";
 import base from "../base";
 import URModel from "../../model/tk_user_role";
 import logicUser from "../../logic/user";
@@ -20,7 +20,9 @@ export  default class extends base {
              
              ctx.body = await { code:200, state:true, mssage:"select add success",result:res}
          }else{
-             ctx.body = await ctx.model.table("tk_user").noField("password").pageSelect(pageNum,pageSize);
+             var res= await ctx.model.table("tk_user").noField("password").pageSelect(pageNum,pageSize);
+            res["status"] = true;
+            ctx.body = await res;
 
          }
 
@@ -42,8 +44,8 @@ export  default class extends base {
             contact:contact,
             token:ctx.heper.signRonder(48),
             status:status||1,
-            create_time:new Date().getTime(),
-            updata_time:new Date().getTime(),
+            createtime:new Date().getTime(),
+            updatatime:new Date().getTime(),
         }
 
         var resInsert =await ctx.model.table("tk_user").thenAdd(options,{name,contact,_logic: 'OR'})
@@ -55,7 +57,7 @@ export  default class extends base {
         return ctx.body = await ({code:200,state:true,mssage:"add is success",result:resInsert.id})
     }
 
-    @POST("/put")
+    @POST("/add")
     async put(ctx,next){
         var {id,name,password,contact,status,roleArr} =  ctx.request.body;
         if(!id) return ctx.body = await {code:-101,mssage:"id is must required"}

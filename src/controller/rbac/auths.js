@@ -1,4 +1,4 @@
-import {Controller, POST,GET } from "../../util/router_decorator";
+import {Controller, POST, GET} from "../../lib/router";
 import base from "../base";
 @Controller("/rbac/auth")
 export default class auth extends base{

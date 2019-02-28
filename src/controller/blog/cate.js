@@ -1,8 +1,7 @@
-import {Controller, POST, GET} from "../../util/router_decorator";
+import {Controller, POST, GET} from "../../lib/router";
 import userAuth from "../../util/auth_decorator";
-import heper from "../../util/heper";
 @Controller("/blog/cate")
-class cate{
+export  default class{
     // 查询
     @GET("/")
     async index(ctx,next){
@@ -26,7 +25,7 @@ class cate{
         }
        
         var resInsert =await ctx.model.table("tk_cate").thenAdd({
-            name,pid,sort,status,create_time:new Date().getTime(),
+            name,pid,sort,status,createtime:new Date().getTime(),
         },{name});
        
         if(resInsert.type=="exist"){
@@ -40,22 +39,24 @@ class cate{
      //更新
      @POST("/update")
      async update(ctx,next){
-        var {id,name,pid=0,sort=100,status = 1} = ctx.request.body;
+        var {id,name,pid=0,sort=100} = ctx.request.body;
         
-         if(!id||!name){
-             return ctx.body = await {status:false,code:401,msg:"id or name is required"}
+         if(!id||!name)  return ctx.body = await {status:false,code:401,msg:"id or name is required"};
+
+         try {
+            var res = await ctx.model.table("tk_cate").where({id}).thenUpdate({name,pid,sort},{id:["!=",id],name})
+        
+            if(res.type=="exist"){
+                return ctx.body = await  ({code:-101, status:false,mssage:"name is exist",data:""});
+           
+           }else if(res.type=="update"){
+                return ctx.body = await ({code:200,status:true,mssage:"update is success",data:""})
+           }
+        
+         } catch (error) {
+             return await {status:false,error}
          }
         
-         var res = await ctx.model.table("tk_cate").where({id}).thenUpdate({name,pid,sort},{id:["!=",id],name})
-        
-         if(res.type=="exist"){
-             return ctx.body = await  ({code:-101, status:false,mssage:"name is exist",data:""});
-        
-        }else if(res.type=="update"){
-             return ctx.body = await ({code:200,status:true,mssage:"update is success",data:""})
-        }
-        
-         ctx.body = await res;
      }
    
      //单个/批量修改状态

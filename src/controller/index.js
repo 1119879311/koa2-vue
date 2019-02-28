@@ -1,4 +1,4 @@
-import {Controller, GET} from "../util/router_decorator"
+import {Controller, GET} from "../lib/router";
 import URModel from '../model/tk_user_role';
 
 @Controller("/api/index")

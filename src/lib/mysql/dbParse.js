@@ -1,3 +1,6 @@
+'use strict';
+
+const mysql = require('mysql');
 class hepler{
     constructor(){
         
@@ -53,10 +56,10 @@ class parse extends hepler{
     }
     
     parseExplain(val){
-        return val?"EXPLAIN":'';
+        return val?" EXPLAIN ":'';
     }
     parseDistinct(val){
-        return val?"DISTINCT":'';
+        return val?" DISTINCT ":'';
     }
     parseSet(data={}){
         let set = [];
@@ -65,7 +68,7 @@ class parse extends hepler{
             let val = data[key];
            if((this.isString(val)&&val)||this.isNumber(val)){
                val = this.parseValue(val);
-                set.push( key + '=' +val);
+                set.push( key + '=' + val);
            }
         }
         if(set.length){
@@ -109,10 +112,10 @@ class parse extends hepler{
 
     /**
      * 
-     * @param {*} val 
+     * @param {*} option 
      */
-    getWhereMinx(val){
-      
+    getWhereMinx(option){
+        var val = JSON.parse(JSON.stringify(option));
         var _this = this;
         if(!val) return '';
         if(this.isString(val)) return val;
@@ -120,13 +123,20 @@ class parse extends hepler{
             return __complexObj(val)
 
         }else if(this.isArray(val)){
-            
-            var _logic = this.getLogic(val[2]);
-            val.splice(2);
+            // [{}]
+            //[{},{},{},"or"]
+            if(val.length>=2){
+                var _logic = this.getLogic(val[val.length-1]);
+                val.splice(val.length-1);
+            }else{
+                var _logic = this.getLogic();
+            }
+
+            // var _logic = this.getLogic(val[2]);
+            // val.splice(2);
             var whereArr = [];
             val.forEach(itme=>{
                 if(_this.isObject(itme)){
-                    console.log(__complexObj(itme))
                     if(__complexObj(itme))  whereArr.push(' ( '+__complexObj(itme)+ ' ) ');
                 }else if(_this.isString(itme)){
                     whereArr.push(' ( '+itme+ ' ) ');
@@ -199,15 +209,19 @@ class parse extends hepler{
         if(this.isNull(val)) return  ` ${key} IS NULL`;
         if(this.isArray(val)&&val.length){
             var coms = this.getComparsion(val[0]);  
-            
             if(coms){
-                if(/^(=|!=|>|>=|<|<=)$/.test(val[0])){ 
+                if(/^(=|!=|>|>=|<|<=)/.test(val[0])){ 
                     if(this.isNull(val[1])){
                         return coms=='!='? ` ${key} IS NO NULL `:` ${key} IS NULL `;
-                    }else {
-                        return ` ${key}  ${coms} ${this.parseValue(val[1])}`;
                     }
-
+                    if(this.isArray(val[1])){
+                        val = val[1].map(itme=>_this.parseValue(itme,val[2]));
+                        val = val.length?val.join(","):'" "';
+                        return ` ${key} ${coms} ( ${val[0]} )`
+                    }else{
+                        return ` ${key}  ${coms} ${this.parseValue(val[1])} `;
+                    }
+                    
                 }else if(/^(LIKE|NOT\s+LIKE|ILIKE|NOT\s+ILIKE)$/i.test(coms)){
                 
                    if(this.isArray(val[1])){
@@ -221,10 +235,10 @@ class parse extends hepler{
                    }
                 }else if(coms=="BETWEEN"||coms=="NOT BETWEEN"){
                     if(this.isArray(val[1])){
-                        return ' ( '+key +' ' +coms+' '+this.parseValue(val[1][0]) + " ADN " + this.parseValue(val[1][1]) +' ) ';
+                        return ' ( '+key +' ' +coms+' '+this.parseValue(val[1][0]) + " AND " + this.parseValue(val[1][1]) +' ) ';
                     }else if(this.isString(val[1])){
                         var resVal = val[1].split(",");
-                        return ' ( '+ key +' ' +coms+' '+this.parseValue(resVal[0]) + " ADN " + this.parseValue(resVal[1])+' ) ';
+                        return ' ( '+ key +' ' +coms+' '+this.parseValue(resVal[0]) + " AND " + this.parseValue(resVal[1])+' ) ';
                     }
                 }else if(coms=="IN"||coms=="NOT IN"){
                     if(this.isArray(val[1])){
@@ -395,12 +409,13 @@ class parse extends hepler{
      * 
      * @param {string|object|arrAry} opt 
      * @param {string} "2,10" 10
-     * @param {object} {"limit":0,"offset":10}
+     * @param {object} {"page":0,"offset":10}
      * @param {arrAry} [1,]
+     * 参数一个：代表个数 
+     * 参数两个：第一个代表页数，第二个代表个数(整数)，（如果第二个参数小于0，第一个参数为个数）
      */
     parseLimit(opt,_defaultOffset=10){
         if(!opt) return '';
-        var limitStr = '';
         var limitArr = [];
         if(this.isNumber(opt)){
             limitArr[0] = opt;
@@ -409,25 +424,24 @@ class parse extends hepler{
              limitArr = opt.split(",");
            
         }else if(this.isObject(opt)){
-            limitArr[0] = opt['limit'];
+            limitArr[0] = opt['page'];
             limitArr[1] = opt["offset"];
         }else if(this.isArray(opt)){
             limitArr[0] = opt[0];
             limitArr[1] = opt[1];
         }
         if(!limitArr.length) return '';
-        if(limitArr.length==1) return   " limit  " +limitArr[0];
-        var limit  =  parseInt(limitArr[0])<0?1:limitArr[0];
-        _defaultOffset = parseInt(limitArr[1])?parseInt(limitArr[1]):_defaultOffset;
-        limit = isNaN(limit)?0:limit;
-        if(_defaultOffset>0){
-            var r =limit==1?0:limit*_defaultOffset 
-            limitStr = (r>0?r:0) +','+ parseInt((r>0?r:"")+_defaultOffset);
+        if(limitArr.length==1) return   " limit  " +limitArr[0];  
+        // 两个参数
+        var limit  =  parseInt(limitArr[0])<=0?1:limitArr[0];
+        var offset = Number(limitArr[1]);
+        if(offset<=0){
+            offset=0;
+            return  ` limit ${limit},${offset} `; 
         }else {
-            limitStr = limit;
+            limit = (limit-1) * offset;
+            return  ` limit ${limit},${offset} `;
         }
-        return " limit  " +limitStr
-
     }
     parseUnion(opt){
         if(!opt) return '';
@@ -572,7 +586,9 @@ class parse extends hepler{
     parseValue(val,flag=""){
         if(flag=="exp") return val;
         if(this.isString(val)){
-            return '\''+val+'\'';//转义
+           
+           return mysql.escape(val); // 使用mysql 内置转义：
+            // return '\''+`${val}`+'\'';//转义
         }else if(this.isArray(val)){
             if(/^exp/i.test(val[0])){
                 return val[1];
@@ -588,7 +604,7 @@ class parse extends hepler{
         }
         return val;
     }
-
+    
 
 
 }

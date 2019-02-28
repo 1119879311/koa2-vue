@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2019-01-30 17:34:48
+Date: 2019-02-22 19:02:35
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -32,14 +32,16 @@ CREATE TABLE `tk_article` (
   PRIMARY KEY (`id`),
   KEY `cid` (`cid`),
   CONSTRAINT `tk_article_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `tk_cate` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tk_article
 -- ----------------------------
-INSERT INTO `tk_article` VALUES ('4', 'nodejs pm2进', '44545', '5', 'image/1523839487103.jpg', 'PM2.5', '100', '1', '1523946293467');
-INSERT INTO `tk_article` VALUES ('5', '辅导费', '收到', '5', '', '覆盖', '100', '0', '13132');
-INSERT INTO `tk_article` VALUES ('6', 'fgfgfg', 'fgfg', '6', 'fgfg', 'fgf', '100', '1', '1212');
+INSERT INTO `tk_article` VALUES ('4', 'nodejs pm2进', '<p>&lt;h4&gt;安装pm2&lt;/h4&gt;&lt;p&gt;&nbsp;npm install pm2 -g或者npm我-g pm2&nbsp;&lt;/p&gt;&lt;h4&gt;pm2基本命令&lt;/h4&gt;&lt;pre&gt;&lt;code&gt;pm2 start app.js //＃用pm2启动应用app.js（应用入口文件）<br>pm2 list //＃显示所有进程状态<br>pm2 monit //＃监视所有进程<br>pm2 logs //＃显示所有进程日志<br>pm2 stop all //＃停止所有进程<br>pm2 restart all //＃重启所有进程 、、。。<br>pm2 reload <br>&lt;/code&gt;&lt;/pre&gt;</p>', '5', '/upload/thum/20190220/1550628745603.jpg', 'pm2.5pm2.5pm2.5pm2.5pm2.5pm2.5pm2.5pm2.5', '100', '1', '1550829308586');
+INSERT INTO `tk_article` VALUES ('5', '辅导费', '收到<p><img src=\"http://w3.unescn.com/static/images/index/banner1.jpg\" style=\"max-width:100%;\"><br></p>', '5', '/upload/thum/20190219/1550555600929.jpg', '覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖', '100', '1', '1550829308586');
+INSERT INTO `tk_article` VALUES ('6', 'fgfgfg', 'fgfg', '6', '/upload/thum/20190220/1550660214195.png', 'fgf', '100', '1', '1550829308586');
+INSERT INTO `tk_article` VALUES ('7', 'ai', '<p><img src=\"upload/ueimg/20190215/1550227189920.jpg\" style=\"max-width:100%;\"><br></p><p>胜多负少的</p>', '1', '/upload/thum/20190221/1550716484534.jpg', 'aiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiai', '100', '1', '1550829308586');
+INSERT INTO `tk_article` VALUES ('8', 'ais', '<p><img src=\"/upload/thum/20190219/1550552810900.jpg\" style=\"max-width:100%;\"><br></p><p>胜多负少的</p>', '1', '/upload/thum/20190222/1550825262101.jpg', 'aiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiai', '100', '1', '1550829308586');
 
 -- ----------------------------
 -- Table structure for `tk_auth`
@@ -122,13 +124,13 @@ CREATE TABLE `tk_cate` (
 -- ----------------------------
 -- Records of tk_cate
 -- ----------------------------
-INSERT INTO `tk_cate` VALUES ('1', 'AI', '0', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('2', '前端', '0', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('3', '后台', '0', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('4', '数据库', '0', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('5', 'javascript', '2', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('6', 'HTML', '2', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('8', 'php', '3', '100', '1', '');
+INSERT INTO `tk_cate` VALUES ('1', 'AI', '0', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('2', '前端', '0', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('3', '后台', '0', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('4', '数据库', '0', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('5', 'javascript', '2', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('6', 'HTML', '2', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('8', 'php', '3', '100', '1', '1550829308586');
 
 -- ----------------------------
 -- Table structure for `tk_menu`
@@ -231,9 +233,9 @@ CREATE TABLE `tk_tab` (
 -- ----------------------------
 -- Records of tk_tab
 -- ----------------------------
-INSERT INTO `tk_tab` VALUES ('1', '诗意', '1', '1313456465');
-INSERT INTO `tk_tab` VALUES ('2', '音乐', '1', '1313456465');
-INSERT INTO `tk_tab` VALUES ('3', '美术', '1', '1313456465');
+INSERT INTO `tk_tab` VALUES ('1', '诗意', '1', '1550829308586');
+INSERT INTO `tk_tab` VALUES ('2', '音乐', '1', '1550829308586');
+INSERT INTO `tk_tab` VALUES ('3', '美术', '1', '1550829308586');
 
 -- ----------------------------
 -- Table structure for `tk_tab_article`
@@ -251,10 +253,14 @@ CREATE TABLE `tk_tab_article` (
 -- ----------------------------
 -- Records of tk_tab_article
 -- ----------------------------
-INSERT INTO `tk_tab_article` VALUES ('2', '4');
-INSERT INTO `tk_tab_article` VALUES ('1', '4');
-INSERT INTO `tk_tab_article` VALUES ('3', '4');
 INSERT INTO `tk_tab_article` VALUES ('1', '5');
+INSERT INTO `tk_tab_article` VALUES ('1', '4');
+INSERT INTO `tk_tab_article` VALUES ('2', '4');
+INSERT INTO `tk_tab_article` VALUES ('3', '4');
+INSERT INTO `tk_tab_article` VALUES ('1', '7');
+INSERT INTO `tk_tab_article` VALUES ('2', '7');
+INSERT INTO `tk_tab_article` VALUES ('1', '8');
+INSERT INTO `tk_tab_article` VALUES ('2', '8');
 
 -- ----------------------------
 -- Table structure for `tk_user`

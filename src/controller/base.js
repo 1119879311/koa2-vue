@@ -1,4 +1,4 @@
-import userAuth from "../util/auth_decorator";
+import {Controller, POST, GET} from "../lib/router";
 
 export default class {
     // @userAuth.isUser()

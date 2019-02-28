@@ -1,7 +1,7 @@
-import {Controller, POST, GET} from "../../util/router_decorator";
+import {Controller, POST, GET} from "../../lib/router";
 import userAuth from "../../util/auth_decorator";
 @Controller("/blog/tab")
-class tab{
+export  default class{
     // 查询
     @GET("/")
     async  index(ctx,next){
@@ -22,7 +22,7 @@ class tab{
             return ctx.body = await {status:false,code:401,msg:"name is required"}
         }
         var resInsert =await ctx.model.table("tk_tab").thenAdd({
-        name,status,create_time:new Date().getTime(),
+        name,status,createtime:new Date().getTime(),
         },{name});
         if(resInsert.type=="exist"){
             return ctx.body = await  ({code:-101,  status:false,mssage:"name is exist",data:""});
@@ -76,8 +76,7 @@ class tab{
            }
            return ctx.body = await ({code:200,status:true,mssage:"detele is success",data:""})
         } catch (error) {
-            console.log(error)
-            return ctx.body = await  ({code:500, status:false,mssage:"server is error",data:""});
+            return ctx.body = await  ({code:-101, status:false,mssage:"server is error",data:""});
         }
     }
 

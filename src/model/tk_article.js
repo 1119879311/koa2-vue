@@ -5,78 +5,92 @@
 import tabModel from "./tk_tab";
 import model from "./model";
 export default class index{
-
-    static async getCommon(option = {where:"",order:"",limit:""}){
+    /**
+     * @param {object} option 
+     */
+    static async getCommon(option = {where:"",order:{id:"desc"},limit:""}){
         var {page,limit }=  option.limit;
-        return await model.table("tk_article as a").noField("content").field("c.name as cname,c.status as cstatus")
+        option.order =  option.order==undefined ?{id:"desc"}:option.order;
+        return model.table("tk_article as a").noField("content").field("c.name as cname,c.status as cstatus")
                 .join([{join:'left',table:"tk_cate as c",on:"c.id = a.cid"} ])
                 .where(option.where)
                 .order(option.order)
                 .pageSelect(page,limit);
     }
     // 获取一条article
+     /**
+     * @param {object} option 
+     * @param {string|unmber} id 帖子id
+     * @param {string|unmber} a_status 帖子状态,0:忽略状态查询 1：正常，2：禁用
+     * @param {string|unmber} is_tab 帖子的标签状态 0:忽略状态查询 1：正常，2：禁用
+     */
     static async getArticleId(option = {}){
-        var {id,a_status,c_status,is_tab} = option;
-        var wheres = {"at.id":id};
-        if(a_status) wheres[`at.status`] = a_status;
-        if(c_status) wheres[`c.status`] = c_status;
-        var resInfo =  await model.table("tk_article as at")
-            .field("at.*,c.name as c_name,c.status as c_status")
-            .join({join:'left',table:"tk_cate as c",on:"c.id = at.cid"})
-            .where(wheres)
-            .findOne();
-        if(resInfo&&resInfo.error){
-            
-            return resInfo;
+        var {id,a_status=1,is_tab=1} = option;
+        var wheres = {"a.id":id};
+        a_status!=0? wheres[`a.status`] = a_status:null;
+        try {
+            var resInfo =  await model.table("tk_article as a").field("a.*,c.name as c_name,c.status as c_status").join({join:'left',table:"tk_cate as c",on:"c.id = a.cid"}).where(wheres).findOne();
+
+            if(resInfo){
+                var tabWhere = is_tab==0?{a_id:id}:{a_id:id,status:is_tab};
+                resInfo["tab"]=resInfo["tab"] = await model.table("tk_tab").field("id,name,status").where(tabWhere).join({table:"tk_tab_article",join:"right",on:" id = t_id "}).select();
+                // 找上一条 
+                var  nextInfo = await model.table("tk_article").field("id,title,status").where({id:[">",id],status:1}).limit("0,1").order({id:"asc"}).findOne();
+                var  prevInfo = await model.table("tk_article").field("id,title,status").where({id:["<",id],status:1}).limit("0,1").order({id:"desc"}).findOne();
+                resInfo['prevInfo'] = prevInfo;
+                resInfo['nextInfo'] = nextInfo;
+                var status = true;
+            }else{
+                var status = false;
+            }
+            return  await {status,code:200,data:resInfo,mssage:"select is success"};
+
+        } catch (error) {
+            return await Object.assign({status:false},error);
         }
-        if(resInfo){
-           var tabWhere = is_tab==0?{a_id:id}:{a_id:id,status:is_tab};
-           console.log(tabWhere)
-           var tabRes =  await model.where(tabWhere).MormToMorm({
-                middleTable:"tk_tab_article",relateTable:"tk_tab",field:"id,name",rkey:"id",fkey:"a_id",rfkey:"t_id",
-            })
-            resInfo["tab"] = tabRes[resInfo["id"]]?tabRes[resInfo["id"]]:[];
-        }
-       
-        return  await resInfo;
     }
+
+
     //获取all article
     static  async getArticle(option = {}){
-        var {a_status,c_status,sort,is_tab,cid,page,limit=10} = option;
+        var {a_status=1,c_status=1,sort,is_tab,cid,page=1,limit=10} = option;
         var where = {};
-       if(a_status) where[`a.status`] = a_status;
-       if(c_status) where[`c.status`] = c_status;
-       if(cid) where[`a.cid`] = ["in",cid];
-       let resInfo = await this.getCommon({where,order:sort,limit:{page,limit}});
-       
-       if(resInfo&&resInfo.error){
-            resInfo["status"] = false;
-           return resInfo;
+        a_status!=0? where[`a.status`] = a_status:null;
+       if(cid) { //根据分类 id 获取所有的 
+            where[`a.cid`] = ["in",cid];
+            where[`c.status`] = c_status;
+       };
+       try {
+            let resInfo = await this.getCommon({where,order:sort,limit:{page,limit}});
+            resInfo["status"] = true;
+            if(is_tab&&resInfo.data.length){
+                var tabWhere = is_tab==0?{}:{status:is_tab};
+                try {
+                    var tabRes = await tabModel.getGropUidTab(tabWhere);
+                    resInfo.data.map( itme=>{if(itme){var tabArr = tabRes[itme.id];itme["tab"] = tabArr?tabArr:[];}})
+                } catch (error) { 
+                }
+            
+            }
+            return resInfo;
+       } catch (error) {
+            return await Object.assign({status:false},error);
        }
-       resInfo["status"] = true;
-        // 是否需要获取tab
-        if(is_tab&&resInfo.data.length){
-            var tabWhere = is_tab==0?{}:{status:is_tab};
-            var tabRes = await tabModel.getGropUidTab(tabWhere);
-            resInfo.data.map( itme=>{if(itme){var tabArr = tabRes[itme.id];itme["tab"] = tabArr?tabArr:[];}})
-        }
-        return resInfo;
-       
     }
 
     // 根据tab id 获取 article
      static async getArticleTabId(option={}){ 
-        //默认全部，1是正常，2是禁用
-        var {id="",t_status=1,a_status=1,sort} = option;
+        //默认全部 ，1是正常，2是禁用
+        var {tabId="",t_status=1,a_status=1,sort,is_tab=false,page=1,limit=10} = option;
         var tabWhere = {};
+        if( !is_tab) tabWhere[`t_id`] = tabId;
         if(t_status) tabWhere[`status`] = t_status;
-       var tabRes =await model.table("tk_tab").join({join:'right',table:"tk_tab_article as ta",on:"id = t_id"}).where(tabWhere).select();
-       try {
-            var artId = [];
-            var resObj = {};
+        try {
+            var tabRes =await model.table("tk_tab").join({join:'right',table:"tk_tab_article as ta",on:"id = t_id"}).where(tabWhere).select();
+            var [artId,resObj]= [[],{}];
             tabRes.forEach(itme=>{
                 //找出 tabID 对应的所有article Id
-                if(id&&itme.id==id){ artId.push(itme.a_id)}
+                if(tabId&&itme.id==tabId){ artId.push(itme.a_id)}
 
                 // 找出每一个article 下的所有的tab
                 if(resObj[itme["a_id"]]){
@@ -85,46 +99,20 @@ export default class index{
                     resObj[itme["a_id"]] = [itme];
                 }
             })
+
             var artWhere = {"a.id":["in",artId]};
-            if(a_status) artWhere[`a.status`] = a_status;
-            var res =  await this.getCommon({where:artWhere,order:sort});
-            res.data.map( itme=>{if(itme){var tabArr = resObj[itme.id];itme["tab"] = tabArr?tabArr:[];}});
-            return await res;
+            a_status!=0? artWhere[`a.status`] = a_status:null;
+            var result =  await this.getCommon({where:artWhere,order:sort,limit:{page,limit}});
+            result["status"] = true;
+             // 是否需要获取 article 下的 tab
+            if(is_tab&&result.data.length){
+                result.data.map( itme=>{if(itme){var tabArr = resObj[itme.id];itme["tab"] = tabArr?tabArr:[];}});
+            }
+            return await result;
           
        } catch (error) {
-            console.log(error)
-             return await {error:"serve is error",code:500}
+            return await Object.assign({status:false},error);
        }
-       // res.data.map( itme=>{if(itme){var tabArr = tabRes[itme.id];itme["tab"] = tabArr?tabArr:[];}});
-        // return await tabRes
-        // try {
-        //     var tabRes = await tabModel.getGropUidTab(tabWhere);  
-        //     console.log(tabRes)   
-        //     var aidArr = Object.keys(tabRes);//获取 article 的id;
-        //     var artWhere = {"a.id":["in",aidArr]};
-        //     if(a_status) artWhere[`a.status`] = a_status;
-        //     var res =  await this.getCommon({where:artWhere,order:sort});
-        //     res.data.map( itme=>{if(itme){var tabArr = tabRes[itme.id];itme["tab"] = tabArr?tabArr:[];}});
-        //     return res;
-        // } catch (error) {
-        //     console.log(error)
-        //     return await {error:"serve is error",code:500}
-        // }
-        //  var where = {};
-        //  if(a_status) where[`a.status`] = a_status;
-        //  if(c_status) where[`c.status`] = c_status;
-        // //  var res =  await this.getCommon({where,order:sort});
-
-        // option={id:"",t_status:-1,a_status:-1}
-        // var getGropUidTabWhere = {id:option.id};
-        // var wheres = {};
-        // if(option.t_status!=undefined &&option.t_status!=-1) wheres[`status`] = option.t_status;
-        // var tabRes = await tabModel.getGropUidTab(getGropUidTabWhere);     
-        // var aidArr = Object.keys(tabRes)
-        // var getCommonWhere = {"a.id":["in",aidArr]};
-        // if(option.a_status!=undefined &&option.a_status!=-1) wheres[`a.status`] =option.a_status;
-        // var res =  await this.getCommon({where:getCommonWhere});
-        // res.data.map( itme=>{if(itme){var tabArr = tabRes[itme.id];itme["tab"] = tabArr?tabArr:[];}});
-        // return res;
+      
      }
 }
