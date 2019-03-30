@@ -112,16 +112,24 @@ let parse = class parse extends hepler {
 
     /**
      * 
+<<<<<<< HEAD
      * @param {*} option 
      */
     getWhereMinx(option) {
         var val = JSON.parse(JSON.stringify(option));
+=======
+     * @param {*} val 
+     */
+    getWhereMinx(val) {
+
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
         var _this = this;
         if (!val) return '';
         if (this.isString(val)) return val;
         if (this.isObject(val)) {
             return __complexObj(val);
         } else if (this.isArray(val)) {
+<<<<<<< HEAD
             // [{}]
             //[{},{},{},"or"]
             if (val.length >= 2) {
@@ -133,6 +141,11 @@ let parse = class parse extends hepler {
 
             // var _logic = this.getLogic(val[2]);
             // val.splice(2);
+=======
+
+            var _logic = this.getLogic(val[2]);
+            val.splice(2);
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
             var whereArr = [];
             val.forEach(itme => {
                 if (_this.isObject(itme)) {
@@ -419,7 +432,11 @@ let parse = class parse extends hepler {
         } else if (this.isObject(opt)) {
             limitArr[0] = opt['page'];
             limitArr[1] = opt["offset"];
+<<<<<<< HEAD
         } else if (this.isArray(opt) && opt[0] && opt[1]) {
+=======
+        } else if (this.isArray(opt)) {
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
             limitArr[0] = opt[0];
             limitArr[1] = opt[1];
         }

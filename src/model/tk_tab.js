@@ -21,6 +21,7 @@ export default class index{
             .group("ta.t_id")
             .having(having)
             .select();
+            console.log(res)
         return await res;
     }
     // 

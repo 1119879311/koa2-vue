@@ -290,12 +290,22 @@ CREATE TABLE `tk_tab_article` (
 -- Records of tk_tab_article
 -- ----------------------------
 INSERT INTO `tk_tab_article` VALUES ('1', '5');
+<<<<<<< HEAD
 INSERT INTO `tk_tab_article` VALUES ('1', '8');
 INSERT INTO `tk_tab_article` VALUES ('2', '8');
 INSERT INTO `tk_tab_article` VALUES ('1', '7');
 INSERT INTO `tk_tab_article` VALUES ('2', '7');
 INSERT INTO `tk_tab_article` VALUES ('1', '4');
 INSERT INTO `tk_tab_article` VALUES ('2', '4');
+=======
+INSERT INTO `tk_tab_article` VALUES ('1', '4');
+INSERT INTO `tk_tab_article` VALUES ('2', '4');
+INSERT INTO `tk_tab_article` VALUES ('3', '4');
+INSERT INTO `tk_tab_article` VALUES ('1', '7');
+INSERT INTO `tk_tab_article` VALUES ('2', '7');
+INSERT INTO `tk_tab_article` VALUES ('1', '8');
+INSERT INTO `tk_tab_article` VALUES ('2', '8');
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 
 -- ----------------------------
 -- Table structure for `tk_user`

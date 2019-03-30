@@ -7,16 +7,23 @@ exports.default = undefined;
 
 var _dec, _dec2, _dec3, _class, _desc, _value, _class2;
 
+<<<<<<< HEAD
 var _router = require("../../lib/router");
+=======
+var _router_decorator = require("../../util/router_decorator");
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 
 var _upload = require("../../lib/upload");
 
 var _upload2 = _interopRequireDefault(_upload);
 
+<<<<<<< HEAD
 var _base = require("../base");
 
 var _base2 = _interopRequireDefault(_base);
 
+=======
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
@@ -52,11 +59,16 @@ const fs = require("fs");
 const path = require("path");
 const stactPath = "/theme";
 
+<<<<<<< HEAD
 let _default = (_dec = (0, _router.Controller)("/upload"), _dec2 = (0, _router.POST)("/thum"), _dec3 = (0, _router.POST)("/ueimg"), _dec(_class = (_class2 = class _default extends _base2.default {
     constructor() {
 
         super();
     }
+=======
+let _default = (_dec = (0, _router_decorator.Controller)("/upload"), _dec2 = (0, _router_decorator.POST)("/thum"), _dec3 = (0, _router_decorator.POST)("/ueimg"), _dec(_class = (_class2 = class _default {
+    constructor() {}
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 
     async thum(ctx, next) {
         var dir = await this.getFileName('/upload/thum');
@@ -66,6 +78,10 @@ let _default = (_dec = (0, _router.Controller)("/upload"), _dec2 = (0, _router.P
             var fields = res.fields;
             if (fields && fields.id && files[0].url) {
                 var res = await ctx.model.table("tk_article").field("thumimg").where({ id: fields.id }).findOne();
+<<<<<<< HEAD
+=======
+                console.log(res);
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
                 if (res) {
                     //修改
                     fs.unlinkSync(path.join(process.cwd(), stactPath, res.thumimg)); //删除原来的img
@@ -107,7 +123,11 @@ let _default = (_dec = (0, _router.Controller)("/upload"), _dec2 = (0, _router.P
         const date = new Date();
         let month = Number.parseInt(date.getMonth()) + 1;
         month = month.toString().length > 1 ? month : `0${month}`;
+<<<<<<< HEAD
         var dir = `${prex}/${date.getFullYear()}${month}`;
+=======
+        var dir = `${prex}/${date.getFullYear()}${month}${date.getDate()}`;
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
         return dir;
     }
 }, (_applyDecoratedDescriptor(_class2.prototype, "thum", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "thum"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "uearticle", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "uearticle"), _class2.prototype)), _class2)) || _class);

@@ -13,9 +13,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = new class {
     constructor() {
         this.veryname = _joi2.default.string().alphanum().min(3).max(30).required().error(new Error("name is lenght is 3-30"));
+<<<<<<< HEAD
         this.verypass = _joi2.default.string().required().regex(/^[a-zA-Z0-9_@*\.]{3,30}$/).error(new Error("password is 只能字母与数字 且 长度3-30位"));
         this.verycontact = _joi2.default.string().required().regex(/(^(13|15|18)\d{9}$)|(^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$)/).error(new Error("please contact is email or mobile"));
         this.verystatus = _joi2.default.required().error(new Error("status is require"));
+=======
+        this.verypass = _joi2.default.string().required().regex(/^[a-zA-Z0-9]{3,30}$/).error(new Error("password is 只能字母与数字 且 长度3-30位"));
+        this.verycontact = _joi2.default.string().required().regex(/(^(13|15|18)\d{9}$)|(^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$)/).error(new Error("please contact is email or mobile"));
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
     }
 
     async login(data) {
@@ -46,10 +51,19 @@ exports.default = new class {
         var _this = this;
         var schema = _joi2.default.object().keys({
             name: _this.veryname,
+<<<<<<< HEAD
             contact: _this.verycontact,
             status: _this.verystatus
         });
         var resVali = _joi2.default.validate(data, schema, { allowUnknown: true });
+=======
+            contact: _this.verycontact
+        });
+        console.log(data);
+        var resVali = _joi2.default.validate(data, schema, { allowUnknown: true });
+        console.log(resVali);
+
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
         if (resVali.error) return await { code: -101, mssage: resVali.error.message };
         return null;
     }

@@ -33,7 +33,11 @@ let connect = class connect {
             _this.pool.getConnection((err, coms) => {
                 if (err) {
                     console.log(err);
+<<<<<<< HEAD
                     reject("connect fail " + err);
+=======
+                    reject("connect fail" + err);
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
                     return;
                 }
                 var resComs = coms.query(sql, option, (err, res, fields) => {
@@ -50,7 +54,10 @@ let connect = class connect {
     }
     // 事务
     transaction(sqlArr) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
         var _this = this;
         return new Promise((resolve, reject) => {
             _this.pool.getConnection((err, coms) => {
@@ -63,6 +70,7 @@ let connect = class connect {
                         reject("connect fail" + err);
                         return;
                     }
+<<<<<<< HEAD
 
                     var resSQL = sqlArr.map(val => {
                         return new Promise((resolve, reject) => {
@@ -117,6 +125,40 @@ let connect = class connect {
                         });
                     });
 
+=======
+                    for (let i = 0; i < sqlArr.length; i++) {
+                        if (_dbParse2.default.isString(sqlArr[i])) {
+                            _this.execsql(sqlArr[i]).catch(err => {
+                                coms.rollback(() => {
+                                    reject(err);
+                                });
+                            });
+                        } else if (_dbParse2.default.isArray(sqlArr[i])) {
+                            var dataArr = sqlArr[i];
+                            _this.execsql(dataArr[0], dataArr[1]).catch(err => {
+                                coms.rollback(() => {
+                                    reject(err);
+                                });
+                            });
+                        } else if (_dbParse2.default.isObject(sqlArr[i])) {
+                            var dataObj = sqlArr[i];
+                            _this.execsql(dataObj['sql'], dataObj['value']).catch(err => {
+                                coms.rollback(() => {
+                                    reject(err);
+                                });
+                            });
+                        }
+                    }
+                    coms.commit(err => {
+                        if (err) {
+                            coms.rollback(() => {
+                                reject(err);
+                            });
+                        }
+                    });
+                    console.log("Transaction");
+                    resolve("Transaction complete");
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
                     coms.release();
                 });
             });
@@ -130,9 +172,21 @@ let model = class model extends connect {
         this.build = false;
         this.options = {};
     }
+<<<<<<< HEAD
     async error(err) {
         console.log(err);
         return await { code: -101, mssage: JSON.stringify(err), status: false };
+=======
+    // static instances(){
+    //     if (!this.instance) {
+    //         this.instance = new model();
+    //     }
+    //     return this.instance;
+    // }
+    async error(err) {
+        console.log(err);
+        return await { code: 500, error: JSON.stringify(err), status: false };
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
     }
     setInit() {
         this.options = {};
@@ -242,7 +296,10 @@ let model = class model extends connect {
     async findOne() {
         return new Promise(async (resolve, reject) => {
             try {
+<<<<<<< HEAD
                 this.limit(1);
+=======
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
                 var res = await this.select();
                 resolve(res[0] ? res[0] : null);
             } catch (error) {
@@ -435,9 +492,13 @@ let model = class model extends connect {
                     this.options.where = `${this.options.typeVal} in (${inSql})`;
                     sqlStr = _dbParse2.default.parseSelectSql(this.options);
                 } else {
+<<<<<<< HEAD
                     var copeDta = this.options;
 
                     sqlStr = _dbParse2.default.parseFindTypeSql(copeDta);
+=======
+                    sqlStr = _dbParse2.default.parseFindTypeSql(this.options);
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
                 }
                 if (this.build) {
                     await this.setInit();
@@ -479,16 +540,24 @@ let model = class model extends connect {
         this.options.limit = [page, limit];
         return new Promise(async (resolve, reject) => {
             try {
+<<<<<<< HEAD
                 var data = JSON.parse(JSON.stringify(this.options));
                 var res = await this.execsql(_dbParse2.default.parseSelectSql(data));
 
+=======
+                var res = await this.execsql(_dbParse2.default.parseSelectSql(this.options));
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
                 this.options.group = "";
                 this.options.limit = await '';
                 this.options.field = (await this.options.field) ? this.options.field : "*";
                 var count = await this.count();
                 count = count.length ? count[0].count : 0;
                 await this.setInit();
+<<<<<<< HEAD
                 return await resolve({ code: 200, mssage: "success", count: count, data: res });
+=======
+                return await resolve({ code: 200, msg: "success", count: count, data: res });
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
             } catch (error) {
                 await this.setInit();
                 return reject((await this.error(error)));

@@ -110,7 +110,6 @@ export  default class extends base {
     @POST("/assginAuth")
     async assginRole(ctx,next){
         var {id,authArrId={}} = ctx.request.body;
-        console.log(authArrId)
         if(Object.prototype.toString.call(authArrId)=="[object Object]"){
             authArrId = Object.values(authArrId);
         }

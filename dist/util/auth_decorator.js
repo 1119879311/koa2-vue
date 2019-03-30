@@ -10,6 +10,7 @@ var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
 var _config = require("../config");
 
+<<<<<<< HEAD
 var _heper = require("./heper");
 
 var _heper2 = _interopRequireDefault(_heper);
@@ -59,28 +60,63 @@ let index = class index {
     }
 
     // 装饰 用户拦截
+=======
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+let index = class index {
+    static utilUser(ctx) {
+        let token = ctx.header.authorization;
+        if (!token) return { code: -101, mssage: "miss is token", status: false };
+        try {
+            let res = _jsonwebtoken2.default.verify(token, ctx.config("signed"));
+            if (res._timeOut_ - new Date().getTime() < 0) return { code: -104, mssage: "token is not invalid", status: false };
+            ctx.state['userInfo'] = res;
+        } catch (error) {
+            return { code: -104, mssage: "token is error", status: false };
+        }
+        return null;
+    }
+
+    signed(data = {}, signed = signed) {
+        Object.assign(data, { _timeOut_: new Date().getTime() + _config.sessionTime });
+        return _jsonwebtoken2.default.sign(data, signed);
+    }
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
     isUser() {
         let cthis = this;
         return (target, value, dec) => {
             let fn = dec.value;
             dec.value = async (ctx, next, _this) => {
                 if (!ctx.request) return;
+<<<<<<< HEAD
                 let res = await cthis.utilUser(ctx);
+=======
+                let res = cthis.constructor.utilUser(ctx);
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
                 if (res) return ctx.body = await res;
                 await fn.call(_this, ctx, next, _this);
             };
         };
     }
+<<<<<<< HEAD
     // 装饰 角色拦截
+=======
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
     isRoleAuth() {
         let cthis = this;
         return (target, value, dec) => {
             let fn = dec.value;
             dec.value = async (ctx, next, _this) => {
                 if (!ctx.request) return;
+<<<<<<< HEAD
                 var res = await cthis.utilRole(ctx);
                 if (res) return ctx.body = await res;
                 return await fn.call(_this, ctx, next, _this);
+=======
+                var res = cthis.constructor.utilUser(ctx);
+                if (res) return ctx.body = await res;
+                await fn.call(_this, ctx, next, _this);
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
             };
         };
     }

@@ -45,11 +45,14 @@ let index = class index {
             if (resInfo) {
                 var tabWhere = is_tab == 0 ? { a_id: id } : { a_id: id, status: is_tab };
                 resInfo["tab"] = resInfo["tab"] = await _model2.default.table("tk_tab").field("id,name,status").where(tabWhere).join({ table: "tk_tab_article", join: "right", on: " id = t_id " }).select();
+<<<<<<< HEAD
                 // 找上一条 
                 var nextInfo = await _model2.default.table("tk_article").field("id,title,status").where({ id: [">", id], status: 1 }).limit("0,1").order({ id: "asc" }).findOne();
                 var prevInfo = await _model2.default.table("tk_article").field("id,title,status").where({ id: ["<", id], status: 1 }).limit("0,1").order({ id: "desc" }).findOne();
                 resInfo['prevInfo'] = prevInfo;
                 resInfo['nextInfo'] = nextInfo;
+=======
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
                 var status = true;
             } else {
                 var status = false;

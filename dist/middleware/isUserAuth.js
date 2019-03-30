@@ -8,10 +8,16 @@ var _jsonwebtoken = require("jsonwebtoken");
 
 var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
+<<<<<<< HEAD
+=======
+var _config = require("../config");
+
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 var _heper = require("../util/heper");
 
 var _heper2 = _interopRequireDefault(_heper);
 
+<<<<<<< HEAD
 var _config = require("../config");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -20,6 +26,13 @@ exports.default = {
 
     siger(data = {}, signeds = _config.signed) {
         Object.assign(data, { _timeOut_: new Date().getTime() + _config.sessionTime, signRonder: _heper2.default.signRonder(30) + new Date().getTime() });
+=======
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    siger(data = {}, signeds = _config.signed) {
+        Object.assign(data, { _timeOut_: new Date().getTime() + 1000 * 60 * 60 * 24, signRonder: _heper2.default.signRonder(30) + new Date().getTime() });
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
         var token = _jsonwebtoken2.default.sign(data, signeds);
         return token;
     },

@@ -8,8 +8,11 @@ var _koa2Cors = require('koa2-cors');
 
 var _koa2Cors2 = _interopRequireDefault(_koa2Cors);
 
+<<<<<<< HEAD
 var _ctxbody = require('./util/ctxbody');
 
+=======
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 var _middleware = require('./middleware');
 
 var _middleware2 = _interopRequireDefault(_middleware);
@@ -18,16 +21,24 @@ var _router = require('./router');
 
 var _router2 = _interopRequireDefault(_router);
 
+<<<<<<< HEAD
+=======
+require('./test');
+
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const app = new _koa2.default();
 const cluster = require("cluster");
 const nunCpus = require("os").cpus().length;
 const http = require("http");
+<<<<<<< HEAD
 
 app.context.success = _ctxbody.success;
 app.context.error = _ctxbody.error;
 
+=======
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 app.use((0, _koa2Cors2.default)());
 // app.use(async (ctx,next)=>{
 //     // 允许来自所有域名请求
@@ -47,8 +58,13 @@ app.use((0, _koa2Cors2.default)());
 //         ctx.response.status = 200
 //     }
 // })
+<<<<<<< HEAD
 app.use(async (ctx, next) => {
 
+=======
+
+app.use(async (ctx, next) => {
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
     console.log(ctx.headers.authorization);
     process.on('uncaughtException', async error => {
         //捕获进程错误
@@ -63,9 +79,12 @@ app.use(async (ctx, next) => {
 
 (0, _router2.default)(app); //加载路由
 
+<<<<<<< HEAD
 // import "./test"
 
 
+=======
+>>>>>>> 1c587a32720794c851f701e5bf832a642b1e9bd2
 if (cluster.isMaster) {
     console.log(`主进程${process.pid}正在运行`);
     for (let i = 0; i < 2; i++) {
