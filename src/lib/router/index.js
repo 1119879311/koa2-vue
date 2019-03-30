@@ -1,5 +1,5 @@
 import koaRouter from 'koa-router';
-import { routerPrefix } from "../config";
+import { routerPrefix } from "../../config";
 const router = new koaRouter();
 
 const RequestMethod = {
@@ -34,11 +34,13 @@ function Request(option = {url, method}) {
         dec.value = (routers, target) => {
             routers[option.method](routers.prefixed + option.url, async (ctx, next) => {
                 if (target.__before && typeof target.__before == "function") {
+                    // 如果class 有__before 前置函数，
                     var beforeRes = await target.__before(ctx, next, target);
                     if (!beforeRes) {
                        return await fn.call(target, ctx, next, target)
+                    }else{
+                        return  ctx.body = await beforeRes
                     }
-                    ctx.body = await beforeRes
                 } else {
                     await fn.call(target, ctx, next, target)
                 }

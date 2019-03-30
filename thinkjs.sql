@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2019-01-30 17:34:48
+Date: 2019-03-19 19:03:23
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -32,14 +32,16 @@ CREATE TABLE `tk_article` (
   PRIMARY KEY (`id`),
   KEY `cid` (`cid`),
   CONSTRAINT `tk_article_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `tk_cate` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tk_article
 -- ----------------------------
-INSERT INTO `tk_article` VALUES ('4', 'nodejs pm2进', '44545', '5', 'image/1523839487103.jpg', 'PM2.5', '100', '1', '1523946293467');
-INSERT INTO `tk_article` VALUES ('5', '辅导费', '收到', '5', '', '覆盖', '100', '0', '13132');
-INSERT INTO `tk_article` VALUES ('6', 'fgfgfg', 'fgfg', '6', 'fgfg', 'fgf', '100', '1', '1212');
+INSERT INTO `tk_article` VALUES ('4', 'nodejs pm2进', '<p>&lt;h4&gt;安装pm2&lt;/h4&gt;&lt;p&gt;&nbsp;npm install pm2 -g或者npm我-g pm2&nbsp;&lt;/p&gt;&lt;h4&gt;pm2基本命令&lt;/h4&gt;&lt;pre&gt;&lt;code&gt;pm2 start app.js //＃用pm2启动应用app.js（应用入口文件）<br>pm2 list //＃显示所有进程状态<br>pm2 monit //＃监视所有进程<br>pm2 logs //＃显示所有进程日志<br>pm2 stop all //＃停止所有进程<br>pm2 restart all //＃重启所有进程 、、。。<br>pm2 reload <br>&lt;/code&gt;&lt;/pre&gt;</p>', '5', '/upload/thum/20190220/1550628745603.jpg', '今天天气很好，是真的很好，是真的很好，是真的很好。。。。。。', '104', '1', '1550829308586');
+INSERT INTO `tk_article` VALUES ('5', '辅导费', '收到<p><img src=\"http://w3.unescn.com/static/images/index/banner1.jpg\" style=\"max-width:100%;\"><br></p>', '5', '/upload/thum/20190219/1550555600929.jpg', '覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖覆盖', '102', '1', '1550829308586');
+INSERT INTO `tk_article` VALUES ('6', 'fgfgfg', 'fgfg<p><br></p>', '6', '/upload/thum/20190220/1550660214195.png', '今天天气很好，是真的很好，是真的很好，是真的很好。。。。。。', '101', '1', '1550829308586');
+INSERT INTO `tk_article` VALUES ('7', 'ai', '<p><img src=\"upload/ueimg/20190215/1550227189920.jpg\" style=\"max-width:100%;\"><br></p><p>胜多负少的</p>', '1', '/upload/thum/20190221/1550716484534.jpg', '今天天气很好，是真的很好，是真的很好，是真的很好。。。。。。', '102', '1', '1550829308586');
+INSERT INTO `tk_article` VALUES ('8', 'ais', '<p><img src=\"/upload/thum/20190219/1550552810900.jpg\" style=\"max-width:100%;\"><br></p><p>胜多负少的</p>', '1', '/upload/thum/20190222/1550825262101.jpg', '今天天气很好，是真的很好，是真的很好，是真的很好。。。。。。', '106', '1', '1550829308586');
 
 -- ----------------------------
 -- Table structure for `tk_auth`
@@ -48,40 +50,49 @@ DROP TABLE IF EXISTS `tk_auth`;
 CREATE TABLE `tk_auth` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '权限id',
   `name` varchar(255) NOT NULL COMMENT '权限名称',
+  `identName` varchar(48) NOT NULL DEFAULT '' COMMENT 'url 的唯一标识',
   `url` varchar(255) NOT NULL COMMENT '链接地址',
-  `g_name` varchar(255) NOT NULL DEFAULT '默认分组' COMMENT '分组默认',
+  `groupName` varchar(255) NOT NULL DEFAULT '默认分组' COMMENT '分组默认',
   `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态 0 | 1',
-  `create_time` varchar(255) NOT NULL COMMENT '创建时间',
-  `update_time` varchar(255) NOT NULL,
+  `createtime` varchar(255) NOT NULL COMMENT '创建时间',
+  `updatetime` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `g_id` (`g_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+  KEY `g_id` (`groupName`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tk_auth
 -- ----------------------------
-INSERT INTO `tk_auth` VALUES ('2', '添加行为', '/api/rbac/auth/add', '默认分组', '1', '1537617221727', '1537617221727');
-INSERT INTO `tk_auth` VALUES ('3', '添加用户', '/api/rbac/user/add', '权限管理', '1', '1543750294204', '1543750294204');
-INSERT INTO `tk_auth` VALUES ('4', '编辑用户', '/api/rbac/user/edit', '权限管理', '1', '1543750491972', '1543750491972');
-INSERT INTO `tk_auth` VALUES ('5', '编辑添行为', '/api/rbac/auth/edit', '权限管理', '1', '1546425096159', '1546425096160');
-
--- ----------------------------
--- Table structure for `tk_auth_group`
--- ----------------------------
-DROP TABLE IF EXISTS `tk_auth_group`;
-CREATE TABLE `tk_auth_group` (
-  `gid` int(48) NOT NULL,
-  `gname` varchar(255) NOT NULL DEFAULT '其他分组' COMMENT '分组描述',
-  `gstatus` int(12) NOT NULL DEFAULT '1' COMMENT '状态1：激活，2：禁止',
-  `gcreate_time` varchar(255) NOT NULL,
-  PRIMARY KEY (`gid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of tk_auth_group
--- ----------------------------
-INSERT INTO `tk_auth_group` VALUES ('1', '其他', '1', '11213123132');
-INSERT INTO `tk_auth_group` VALUES ('2', '权限管理', '0', '13245646513');
+INSERT INTO `tk_auth` VALUES ('2', '添加行为', 'authadd', '/api/rbac/auth/add/', '权限管理', '1', '1537617221727', '1552642961325');
+INSERT INTO `tk_auth` VALUES ('3', '添加用户', 'useradd', '/api/rbac/user/add/', '用户管理', '1', '1543750294204', '1552643698232');
+INSERT INTO `tk_auth` VALUES ('4', '编辑用户', 'useredit', '/api/rbac/user/update/', '用户管理', '1', '1543750491972', '1552644382391');
+INSERT INTO `tk_auth` VALUES ('5', '编辑行为', 'authedit', '/api/rbac/auth/update/', '权限管理', '1', '1546425096159', '1552644390960');
+INSERT INTO `tk_auth` VALUES ('6', '查看用户', 'userlook', '/api/rbac/user/', '用户管理', '1', '1552139016730', '1552643687345');
+INSERT INTO `tk_auth` VALUES ('7', '删除用户', 'userdel', '/api/rbac/user/delete/', '用户管理', '1', '1552204293747', '1552643676600');
+INSERT INTO `tk_auth` VALUES ('8', '查看行为', 'authlook', '/api/rbac/auth/', '权限管理', '1', '1552643413156', '1552643775508');
+INSERT INTO `tk_auth` VALUES ('9', '开启禁用用户', 'userswtich', '/api/rbac/user/swtich/', '用户管理', '1', '1552643569431', '1552643727627');
+INSERT INTO `tk_auth` VALUES ('10', '开启或禁用行为', 'authswtich', '/api/rbac/auth/swtich/', '权限管理', '1', '1552643848177', '1552643913513');
+INSERT INTO `tk_auth` VALUES ('11', '删除行为', 'authdel', '/api/rbac/auth/delete/', '权限管理', '1', '1552643994191', '1552643994191');
+INSERT INTO `tk_auth` VALUES ('12', '查看角色', 'rolelook', '/api/rbac/role/', '角色管理', '1', '1552644098145', '1552644098145');
+INSERT INTO `tk_auth` VALUES ('13', '添加角色', 'roleadd', '/api/rbac/role/add/', '角色管理', '1', '1552644267022', '1552644267022');
+INSERT INTO `tk_auth` VALUES ('14', '编辑角色', 'roleedit', '/api/rbac/role/update/', '角色管理', '1', '1552644374457', '1552644374457');
+INSERT INTO `tk_auth` VALUES ('15', '删除角色', 'roledel', '/api/rbac/role/delete/', '角色管理', '1', '1552644459926', '1552644459926');
+INSERT INTO `tk_auth` VALUES ('16', '开启禁用角色', 'rolesswtich', '/api/rbac/role/swtich/', '角色管理', '1', '1552644515220', '1552644541190');
+INSERT INTO `tk_auth` VALUES ('17', '分配权限', 'assginauth', '/api/rbac/role/assginauth/', '角色管理', '1', '1552644616464', '1552644673955');
+INSERT INTO `tk_auth` VALUES ('18', '分配角色', 'assginrole', '/api/rbac/user/assginrole/', '用户管理', '1', '1552644663665', '1552644663665');
+INSERT INTO `tk_auth` VALUES ('19', '添加帖子', 'artcleadd', '/api/blog/artcle/add/', '帖子管理', '1', '1552644868873', '1552644868873');
+INSERT INTO `tk_auth` VALUES ('20', '删除帖子', 'articledel', '/api/blog/artcle/delete/', '帖子管理', '1', '1552644935138', '1552644935138');
+INSERT INTO `tk_auth` VALUES ('21', '编辑帖子', 'artcleedit', '/api/blog/artcle/update/', '帖子管理', '1', '1552645197945', '1552645197945');
+INSERT INTO `tk_auth` VALUES ('22', '上传帖子缩略图', 'uploadthum', '/api/upload/thum/', '帖子管理', '1', '1552645470098', '1552645470098');
+INSERT INTO `tk_auth` VALUES ('23', '上传帖子图片', 'uploadueimg', '/api/upload/ueimg/', '帖子管理', '1', '1552645525404', '1552645525404');
+INSERT INTO `tk_auth` VALUES ('24', '添加帖子分类', 'blogcate', '/api/blog/cate/add/', '分类管理', '1', '1552645636851', '1552908718719');
+INSERT INTO `tk_auth` VALUES ('25', '编辑分类', 'cateedit', '/api/blog/cate/update/', '分类管理', '1', '1552909095974', '1552909095974');
+INSERT INTO `tk_auth` VALUES ('26', '开启或禁用分类', 'cateswtich', '/api/blog/cate/swtich/', '分类管理', '1', '1552909142378', '1552909169623');
+INSERT INTO `tk_auth` VALUES ('27', '删除分类', 'catedel', '/api/blog/cate/delete/', '分类管理', '1', '1552909205927', '1552909205927');
+INSERT INTO `tk_auth` VALUES ('28', '添加标签', 'tabadd', '/ap/blog/tab/add/', '标签管理', '1', '1552909446806', '1552909446806');
+INSERT INTO `tk_auth` VALUES ('29', '编辑标签', 'tabedit', '/ap/blog/tab/update/', '标签管理', '1', '1552909494832', '1552909494832');
+INSERT INTO `tk_auth` VALUES ('30', '开启或禁用标签', 'tabswtich', '/ap/blog/tab/swtich/', '标签管理', '1', '1552909537219', '1552909537219');
+INSERT INTO `tk_auth` VALUES ('31', '删除标签', 'tabdel', '/api/blog/tab/delete/', '标签管理', '1', '1552909583296', '1552909583296');
 
 -- ----------------------------
 -- Table structure for `tk_auth_muen`
@@ -122,13 +133,13 @@ CREATE TABLE `tk_cate` (
 -- ----------------------------
 -- Records of tk_cate
 -- ----------------------------
-INSERT INTO `tk_cate` VALUES ('1', 'AI', '0', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('2', '前端', '0', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('3', '后台', '0', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('4', '数据库', '0', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('5', 'javascript', '2', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('6', 'HTML', '2', '100', '1', '');
-INSERT INTO `tk_cate` VALUES ('8', 'php', '3', '100', '1', '');
+INSERT INTO `tk_cate` VALUES ('1', 'AI', '0', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('2', '前端', '0', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('3', '后台', '0', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('4', '数据库', '0', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('5', 'javascript', '2', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('6', 'HTML', '2', '100', '1', '1550829308586');
+INSERT INTO `tk_cate` VALUES ('8', 'php', '3', '100', '1', '1550829308586');
 
 -- ----------------------------
 -- Table structure for `tk_menu`
@@ -180,21 +191,17 @@ CREATE TABLE `tk_role` (
   `pid` int(11) NOT NULL COMMENT '角色的父级id (所属)',
   `sort` int(11) NOT NULL DEFAULT '100' COMMENT '排序',
   `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态 0 | 1',
-  `create_time` varchar(255) NOT NULL COMMENT '创建时间',
-  `update_time` varchar(255) NOT NULL,
+  `createtime` varchar(255) NOT NULL COMMENT '创建时间',
+  `updatetime` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tk_role
 -- ----------------------------
-INSERT INTO `tk_role` VALUES ('1', 'admin', '超级管理员', '0', '100', '1', '1534082222', '1534082222');
-INSERT INTO `tk_role` VALUES ('2', 'edit', '普通编辑', '1', '100', '1', '1534082222', '1534082222');
-INSERT INTO `tk_role` VALUES ('3', 'vip9', '会员9', '1', '100', '1', '1537610519287', '1537610519287');
-INSERT INTO `tk_role` VALUES ('4', 'vip1', '会员1', '1', '100', '1', '1537608944162', '1537608944162');
-INSERT INTO `tk_role` VALUES ('5', 'vip2', '会员2', '1', '100', '1', '1537609101765', '1537609101765');
-INSERT INTO `tk_role` VALUES ('6', 'vip3', 'admin', '1', '100', '1', '1537623445597', '1537623445597');
-INSERT INTO `tk_role` VALUES ('7', 'vip', '会员', '1', '100', '1', '1542447471987', '1542447471988');
+INSERT INTO `tk_role` VALUES ('1', 'superAdmin', '超级管理员', '0', '100', '1', '1552133878049', '1552133878049');
+INSERT INTO `tk_role` VALUES ('8', 'look', '阅览 ', '1', '100', '1', '1552138664960', '1552204611925');
+INSERT INTO `tk_role` VALUES ('9', 'del', '删除', '1', '100', '1', '1552204633328', '1552204633328');
 
 -- ----------------------------
 -- Table structure for `tk_role_auth`
@@ -209,12 +216,43 @@ CREATE TABLE `tk_role_auth` (
   KEY `a_id` (`a_id`),
   CONSTRAINT `tk_role_auth_ibfk_1` FOREIGN KEY (`r_id`) REFERENCES `tk_role` (`id`),
   CONSTRAINT `tk_role_auth_ibfk_2` FOREIGN KEY (`a_id`) REFERENCES `tk_auth` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tk_role_auth
 -- ----------------------------
-INSERT INTO `tk_role_auth` VALUES ('4', '6', '2');
+INSERT INTO `tk_role_auth` VALUES ('55', '8', '6');
+INSERT INTO `tk_role_auth` VALUES ('56', '8', '17');
+INSERT INTO `tk_role_auth` VALUES ('98', '1', '17');
+INSERT INTO `tk_role_auth` VALUES ('99', '1', '16');
+INSERT INTO `tk_role_auth` VALUES ('100', '1', '15');
+INSERT INTO `tk_role_auth` VALUES ('101', '1', '14');
+INSERT INTO `tk_role_auth` VALUES ('102', '1', '13');
+INSERT INTO `tk_role_auth` VALUES ('103', '1', '12');
+INSERT INTO `tk_role_auth` VALUES ('104', '1', '18');
+INSERT INTO `tk_role_auth` VALUES ('105', '1', '9');
+INSERT INTO `tk_role_auth` VALUES ('106', '1', '7');
+INSERT INTO `tk_role_auth` VALUES ('107', '1', '6');
+INSERT INTO `tk_role_auth` VALUES ('108', '1', '4');
+INSERT INTO `tk_role_auth` VALUES ('109', '1', '3');
+INSERT INTO `tk_role_auth` VALUES ('110', '1', '31');
+INSERT INTO `tk_role_auth` VALUES ('111', '1', '30');
+INSERT INTO `tk_role_auth` VALUES ('112', '1', '29');
+INSERT INTO `tk_role_auth` VALUES ('113', '1', '28');
+INSERT INTO `tk_role_auth` VALUES ('114', '1', '11');
+INSERT INTO `tk_role_auth` VALUES ('115', '1', '10');
+INSERT INTO `tk_role_auth` VALUES ('116', '1', '8');
+INSERT INTO `tk_role_auth` VALUES ('117', '1', '5');
+INSERT INTO `tk_role_auth` VALUES ('118', '1', '2');
+INSERT INTO `tk_role_auth` VALUES ('119', '1', '23');
+INSERT INTO `tk_role_auth` VALUES ('120', '1', '22');
+INSERT INTO `tk_role_auth` VALUES ('121', '1', '21');
+INSERT INTO `tk_role_auth` VALUES ('122', '1', '20');
+INSERT INTO `tk_role_auth` VALUES ('123', '1', '19');
+INSERT INTO `tk_role_auth` VALUES ('124', '1', '27');
+INSERT INTO `tk_role_auth` VALUES ('125', '1', '26');
+INSERT INTO `tk_role_auth` VALUES ('126', '1', '25');
+INSERT INTO `tk_role_auth` VALUES ('127', '1', '24');
 
 -- ----------------------------
 -- Table structure for `tk_tab`
@@ -231,9 +269,9 @@ CREATE TABLE `tk_tab` (
 -- ----------------------------
 -- Records of tk_tab
 -- ----------------------------
-INSERT INTO `tk_tab` VALUES ('1', '诗意', '1', '1313456465');
-INSERT INTO `tk_tab` VALUES ('2', '音乐', '1', '1313456465');
-INSERT INTO `tk_tab` VALUES ('3', '美术', '1', '1313456465');
+INSERT INTO `tk_tab` VALUES ('1', '诗意', '1', '1550829308586');
+INSERT INTO `tk_tab` VALUES ('2', '音乐', '1', '1550829308586');
+INSERT INTO `tk_tab` VALUES ('3', '美术', '1', '1550829308586');
 
 -- ----------------------------
 -- Table structure for `tk_tab_article`
@@ -251,10 +289,13 @@ CREATE TABLE `tk_tab_article` (
 -- ----------------------------
 -- Records of tk_tab_article
 -- ----------------------------
-INSERT INTO `tk_tab_article` VALUES ('2', '4');
-INSERT INTO `tk_tab_article` VALUES ('1', '4');
-INSERT INTO `tk_tab_article` VALUES ('3', '4');
 INSERT INTO `tk_tab_article` VALUES ('1', '5');
+INSERT INTO `tk_tab_article` VALUES ('1', '8');
+INSERT INTO `tk_tab_article` VALUES ('2', '8');
+INSERT INTO `tk_tab_article` VALUES ('1', '7');
+INSERT INTO `tk_tab_article` VALUES ('2', '7');
+INSERT INTO `tk_tab_article` VALUES ('1', '4');
+INSERT INTO `tk_tab_article` VALUES ('2', '4');
 
 -- ----------------------------
 -- Table structure for `tk_user`
@@ -265,19 +306,20 @@ CREATE TABLE `tk_user` (
   `name` varchar(255) NOT NULL COMMENT '用户名',
   `password` varchar(255) NOT NULL COMMENT '密码',
   `contact` varchar(255) NOT NULL COMMENT '联系方式 ，ipone|eamil',
+  `isAdmin` smallint(12) NOT NULL DEFAULT '2' COMMENT '是否是超级用户管理，1是，2不是',
   `token` varchar(255) NOT NULL COMMENT '认证token',
   `status` int(12) NOT NULL DEFAULT '1' COMMENT '状态 0 | 1',
-  `create_time` varchar(255) NOT NULL COMMENT '创建时间',
-  `updata_time` varchar(255) NOT NULL COMMENT '更新时间',
+  `createtime` varchar(255) NOT NULL COMMENT '创建时间',
+  `updatatime` varchar(255) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tk_user
 -- ----------------------------
-INSERT INTO `tk_user` VALUES ('1', 'admin', 'admin', '11198793111@qq.com', 'qwertyuiopasfghjklzxcvbnm', '1', '1534082222', '1534082222');
-INSERT INTO `tk_user` VALUES ('2', 'mikes', '123456', '23654891', 'jakksdfidfejffkfkfkf', '1', '1530482223', '1534085555');
-INSERT INTO `tk_user` VALUES ('3', 'admin1', '2122345544', '123@qq.com', 'HgQuRSQ9XGeu7rlY9t2DGB3u-9T669bJA8Kq6125IJF9AbA7', '1', '1536389043412', '1536389043413');
+INSERT INTO `tk_user` VALUES ('5', 'root', '442ba7d1cca10b43b40b04329d477513', '1119879311@qq.com', '1', 'smgrpc_jott54xmqzb-hdwbgqk1s1iiyrkb_hqe9dc1dtbpc1552133737892', '1', '1552133737892', '1552133737892');
+INSERT INTO `tk_user` VALUES ('6', 'test1', 'dc20efcafaba4148150c75c976d9b0a4', '123456@qq.com', '2', 'dm8f_cl-epotmquea3x6a2t2-mokftmeladbi-abxmphalm71552133878049', '1', '1552133878049', '1552133878049');
+INSERT INTO `tk_user` VALUES ('9', 'test2', 'dc20efcafaba4148150c75c976d9b0a4', 'test2@qq.com', '2', 'v-ir7pfi9be3ybstoyojpty6v24wsxutsrhzffkgu5bkmtbl1552212036503', '1', '1552212036503', '1552212036503');
 
 -- ----------------------------
 -- Table structure for `tk_user_role`
@@ -295,7 +337,5 @@ CREATE TABLE `tk_user_role` (
 -- ----------------------------
 -- Records of tk_user_role
 -- ----------------------------
-INSERT INTO `tk_user_role` VALUES ('1', '1');
-INSERT INTO `tk_user_role` VALUES ('2', '2');
-INSERT INTO `tk_user_role` VALUES ('3', '1');
-INSERT INTO `tk_user_role` VALUES ('3', '2');
+INSERT INTO `tk_user_role` VALUES ('6', '8');
+INSERT INTO `tk_user_role` VALUES ('9', '1');

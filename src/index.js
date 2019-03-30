@@ -4,6 +4,10 @@ const app = new koa()
 const cluster = require("cluster");
 const nunCpus = require("os").cpus().length;
 const http = require("http");
+import { success,error } from "./util/ctxbody";
+app.context.success = success;
+app.context.error = error;
+
 app.use(koaCors());
 // app.use(async (ctx,next)=>{
 //     // 允许来自所有域名请求
@@ -23,12 +27,13 @@ app.use(koaCors());
 //         ctx.response.status = 200
 //     }
 // })
-
 app.use( async (ctx,next)=>{
+    
+    console.log(ctx.headers.authorization)
     process.on('uncaughtException',async (error) => { //捕获进程错误
         console.log('call uncaughtException handle');
         ctx.status = 500;
-        ctx.body = await {status:500,error:"server error"};
+        ctx.body = await {status:false,error:"server error",code:500};
     });
     await next();
 } )
@@ -39,7 +44,7 @@ middleware(app);//加载中间间
 import allRouter from "./router";
 allRouter(app);//加载路由
 
-
+// import "./test"
 
 
 if(cluster.isMaster){
@@ -72,6 +77,9 @@ if(cluster.isMaster){
     })
     console.log(`工作进程 ${process.pid} 已启动`);
 }
+
+
+
 
 
 

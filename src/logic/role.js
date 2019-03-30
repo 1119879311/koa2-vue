@@ -4,11 +4,11 @@ export default new class {
         this.veryname = Joi.string().required().error(new Error("name is must required"));
         this.verytitle = Joi.string().required().error(new Error("title is must required"));
     }
-    async  addRole(data={}){
+    async  veryRole(data={}){
         var _this = this;
         var schema = Joi.object().keys({
             name:_this.veryname ,
-            password: _this.verytitle,
+            title: _this.verytitle,
         })
 
         var resVali = Joi.validate(data,schema,{allowUnknown: true});

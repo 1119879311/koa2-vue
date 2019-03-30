@@ -47,9 +47,9 @@ export default {
         }
         return str
     },
-    signRonder: (n = 30) => { //或去随机数
-        var str = "3456789aAbBcCdDeEfFgGhHiIjJkKlLmMoOpPqQurRsStTuUvVwWxXyYzZ_-";
-        if (n > str.length || n < 3) n = 30;
+    signRonder: (n = 30) => { //去随机数
+        var str = "123456789aAbBcCdDeEfFgGhHiIjJkKlLmMoOpPqQurRsStTuUvVwWxXyYzZ_-";
+        if ( n < 3) n = 30;
         var ronderstr = "";
         for (var i = 0; i < n; i++) {
             var index = Math.floor(Math.random() * str.length);

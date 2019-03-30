@@ -1,11 +1,13 @@
 import jwt from "jsonwebtoken";
-import { signed } from "../config";
+import heper from "../util/heper";
+import { signed,sessionTime } from "../config";
 export default {
-    siger(data={},signed=signed){
-        Object.assign(data, {_timeOut_: new Date().getTime() + (1000*60 * 60*24)})
+
+    siger(data={},signeds=signed){
+        Object.assign(data, {_timeOut_: new Date().getTime() + (sessionTime),signRonder:heper.signRonder(30)+new Date().getTime()})
         var token = jwt.sign(
             data,
-            signed
+            signeds
         );
         return token;
     },

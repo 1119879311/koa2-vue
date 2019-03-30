@@ -1,8 +1,7 @@
-import {Controller, GET, POST} from "../../util/router_decorator";
+import {Controller, POST, GET} from "../../lib/router";
 import base from "../base";
 import logicRole from "../../logic/role";
-import roleAuthModel from "../../model/tk_role_auth";
-import roleModel from "../../model/tk_role";
+
 
 @Controller("/rbac/role")
 export  default class extends base {
@@ -12,91 +11,130 @@ export  default class extends base {
 
     @GET("/")
     async index(ctx,next){
-        var {id,pageNum,pageSize} = ctx.request.query;
-        if(id){
-            var res =await ctx.model.table("tk_role").where({id}).findOne();
-            // res?res["user_role"]=await URModel.getRole(id):res;
-            ctx.body = await { code:200, state:true, mssage:"select add success",result:res}
-        }else{
-            ctx.body = await ctx.model.table("tk_role").pageSelect(pageNum,pageSize);
-
+        var {id,status} = ctx.request.query;
+        try {
+            if(id){
+                var res =await ctx.model.table("tk_role").where({id,status}).findOne();
+            }else{
+                  var res = await ctx.model.table("tk_role as r").where({status}).select();
+            }
+            return  ctx.body =await ctx.success({mssage:"select is success",data:res});
+        } catch (error) {
+            return  ctx.body =await ctx.error(error);              
         }
+       
     }
     @POST("/add")
     async add(ctx,next){
-        var { name,title,status=1,sort=100,pid=1,authArr=[]} = ctx.request.body;
-        var validRes = await logicRole.addRole({name,title});
-        if (validRes) return ctx.body = await validRes;
+        var { name,title,status=1,sort=100,pid=1} = ctx.request.body;
+        // 验证数据
+        var validRes = await logicRole.veryRole({name,title});
+        if (validRes) return ctx.body = await ctx.error(validRes);
         var options = {
             name,title,status,sort,pid,
-            create_time:new Date().getTime(),
-            update_time:new Date().getTime()
+            createtime:new Date().getTime(),
+            updatetime:new Date().getTime()
         }
-        var resInsert =await ctx.model.table("tk_role").thenAdd(options,{name,title,_logic: 'OR'})
-        // if name or title is exits ,then add is fail...
-        if(resInsert.type=="exist"){
-            return ctx.body = await  ({code:-101,  state:false,mssage:"name or title  is exist",result:""});
+       
+        try {
+            var resInsert =await ctx.model.table("tk_role").thenAdd(options,{name,title,_logic: 'OR'})
+         
+            if(resInsert.type=="exist"){
+                return  ctx.body =await ctx.error("name or title  is exist");  
+            }
+            return  ctx.body =await ctx.success("add is success")
+        } catch (error) {
+            return  ctx.body =await ctx.error(error); 
         }
-        //add role handleAction
-        await  roleAuthModel.addAuth(resInsert.id,authArr||[])
-        return this.body = await ({code:200,  state:true,mssage:"resInsert",result:""});
+      
 
     }
-    @POST("/edit")
-    async edit(ctx,next){
-        var {id, name,title,status=1,sort=100,pid=1,authArr=[]} = ctx.request.body;
-        var options  = {
-            id, name,title,status,
-            sort:data.sort||100,
-            pid:pid||1,
-            create_time:new Date().getTime(),
-            update_time:new Date().getTime()
+    @POST("/update")
+    async update(ctx,next){
+        var {id, name,title,status=1,pid=1,sort} = ctx.request.body;
+        // 数据验证
+        var validRes = await logicRole.veryRole({name,title});
+        if (validRes) return ctx.body = await ctx.error(validRes); 
+
+        var options  = { id, name,title,status,pid,sort, updatetime:new Date().getTime() };
+        try {
+            var res = await ctx.model.table("tk_role").where({id})
+            .thenUpdate(options,{id:["!=",id],__complex:{name:name,title:title,_logic: 'OR'}});
+            
+            if(res.type=="exist"){
+                return  ctx.body =await ctx.error("name or title  is exist"); 
+            }
+            return  ctx.body =await ctx.success("update is success");
+
+        } catch (error) {
+            return  ctx.body =await ctx.error(error);
         }
-        options.pid = options.pid==0?1:options.pid
-
-        var roleid =await ctx.model.table("tk_role").field("id").where({id:id}).findOne();
-        if(!roleid.id) return  ctx.body = await  ({code:-101,  state:false,mssage:"no exist role",result:""});
-
-        var roleInfo = await ctx.model.table("tk_role").where({id:["!=",id],__complex:{name:name,title:title,_logic: 'OR'}}).findOne();
-        if(roleInfo.id) return ctx.body = await({code:-101,  state:false,mssage:"name or title  is exist",result:""});
-        var updataRes = await ctx.model.table("tk_role").where({id}).update(options);
-
-        await  roleAuthModel.addAuth(roleInfo.id,authArr||[])
-        this.body = await {code:200,  state:true,mssage:"edit is success",result:updataRes};
+    
 
     }
+     //删除
+     @POST("/delete")
+     async delete(ctx,next){
+         var {id} = ctx.request.body;
+         if(!id){
+             return ctx.body = await {status:false,code:401,msg:"roleId  is required"}
+         }
+          try {
+                //1.先查是否存在适合的删除数据 (id,status = 2|停用状态)    
+            var resfind = await ctx.model.table("tk_role").where({id,status:2}).findOne();
+            if(!resfind) return ctx.body = await {code:-101, status:false,mssage:"正常状态无法删除",data:""};
+            
+            var resU =  await ctx.model.table("tk_user_role").where({"r_id":id}).buildSql().delete();
+            var resR =  await ctx.model.table("tk_role_auth").where({"r_id":id}).buildSql().delete();
+            var resT =   await ctx.model.table("tk_role").where({id}).buildSql().delete();
+             // 执行事务（原子性）：
+             await ctx.model.transaction([resU,resR,resT]);
+             return  ctx.body =await ctx.success("detele is success");
+         } catch (error) {
+            return ctx.body  = await {code:-101,status:false,mssage:error||"server is error"};
+         }
+     }
 
-    @POST("/switch")
+    //  更新状态
+    @POST("/swtich")
     async switch(ctx,next){
-        //1:open,2:off,0:del;
-        var { status,switchdata } = ctx.request.body;
-        var statusFlag = ["0","1","2"].indexOf(status)==-1?false:true;
-
-        if(!Array.isArray(switchdata) && switchdata){
-            var switchdata = [{id:switchdata}]
-        }else if(!Array.isArray(switchdata)|| !switchdata.length || !statusFlag){
-            return  ctx.body = await  {code:-104,mssage:"miss options or options is error"}
+        var {data=[]} = ctx.request.body;
+        try {
+          var res =await ctx.model.table("tk_role").updateMany(data,{key:"id"});
+          return  ctx.body =await ctx.success("update is success");
+        } catch (error) {
+           return  ctx.body =await ctx.error(error);            
         }
-        switchdata =  switchdata.filter(itme=> {return itme.id}).map(itme=>itme.id);
-        switch (status) {
-            case "0":
-                var idArrs =  await ctx.model.table("tk_role").field('id').where({name:["!=","superAdmin"],id:["in",switchdata],status:0}).select();
-                if(!idArrs|| !idArrs.length) return ctx.body = await   {code:200,state:true,mssage:""};
-                idArrs = idArrs.map(itme=> itme.id);
-                console.log(idArrs)
-                var res = await roleModel.delRole(idArrs);
-                return  ctx.body = await   {code:200,state:true,mssage:res}
-                break;
-            case "1":
-            case "2":
-                status = status=="1"?1:0;
-                console.log(status)
-                switchdata = switchdata.map(itme=> { return {id:itme,status:status} })
-                console.log(switchdata)
-                var res =await  ctx.model.table("tk_role").updateMany(switchdata,{"key":"id"});
-                return  ctx.body = await  {code:200,state:true,mssage:res}
-        }
-        return ctx.body = await  {code:-104,mssage:"miss options or options is error"}
     }
+    //分配权限
+    @POST("/assginAuth")
+    async assginRole(ctx,next){
+        var {id,authArrId={}} = ctx.request.body;
+        console.log(authArrId)
+        if(Object.prototype.toString.call(authArrId)=="[object Object]"){
+            authArrId = Object.values(authArrId);
+        }
+        if(!id|| !Array.isArray(authArrId)){
+           return  ctx.body =await ctx.error("roleid  is required or authArrId type is array");            
+        }
+
+        try {
+            // 先删除原来的auth
+            var sqlArr = [await ctx.model.table("tk_role_auth").where({r_id:id}).buildSql().delete()];
+            // 如果有添加auth
+            if(authArrId&&authArrId.length){
+                var addData = authArrId.map(itme=>{return {a_id:itme,r_id:id} });
+                var addSql =await ctx.model.table("tk_role_auth").buildSql().add(addData);
+                sqlArr.push(addSql);
+            }
+             // 执行事务（原子性）：
+            await ctx.model.transaction(sqlArr);
+            return  ctx.body =await ctx.success("分配成功");
+        } catch (error) {
+              return  ctx.body =await ctx.error(error); 
+            
+        }
+    }
+
 
 }

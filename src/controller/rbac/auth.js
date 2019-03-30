@@ -1,57 +1,134 @@
-import {Controller, POST,GET } from "../../util/router_decorator";
+import {Controller, POST, GET} from "../../lib/router";
 import base from "../base";
 import logicAuth from "../../logic/auth";
 
 
-@Controller("/rbac/auths")
+@Controller("/rbac/auth")
 export default class auth extends base{
+    /**
+     * 查找 auth
+     */
+
     @GET("/")
     async get(ctx,next){
-        var  {status,id} = ctx.request.query;
+        /**
+         * status {Nnmber} 1 or 2 状态
+         * id {Nnmber} auth 的id
+         * roleId {array} 角色的ID 查 一个角色的权限
+         */
+        var  {status,id,roleId} = ctx.request.query;
         var where =status? {status}:{};
-        if(id){
-           var res = await ctx.model.table("tk_auth").where([where,{id}]).findOne();
-           var authGrup =await ctx.model.table("tk_auth").where(where).field("g_name").group("g_name").select();
-           res?res["authGrup"] = authGrup:'';
-           return  ctx.body = await {code:200,status: true,mssage:"find is success",result:res};  
+        try {
+            if(id){
+                var res = await ctx.model.table("tk_auth")
+                .where([where,{id}])
+                .order("groupName")
+                .findOne();
+                return  ctx.body =await ctx.success({data:res});
+             }
+             var res = await ctx.model.table("tk_auth as a")
+             .where({status})
+             .order("groupName desc,id desc")
+             .select();   
+
+             if(res&&roleId){
+                var resrole=  await ctx.model.table("tk_role_auth as ra")
+                .field("a.groupName,ra.a_id")
+                .where({"a.status":1,"ra.r_id":roleId})
+                .join({table:"tk_auth as a",join:"left",on:"a.id=ra.a_id"})
+                .select()
+             }  
+            return  ctx.body =await ctx.success({data:res,roleAuth:resrole});  
+        } catch (error) {
+            return  ctx.body =await ctx.error(error);  
         }
-        var res = await ctx.model.table("tk_auth as a").where(where).select();
-        var resObj = [];
-        res.forEach(element => {
-            var resItme =  resObj.filter(itme=>itme.nameGroup==element.g_name);
-            if(!resItme.length){
-                resObj.push({"nameGroup":element.g_name,data:[element]});
-                return;
-            };
-            resItme[0]["data"].push(element);
-        });
-        ctx.body =await {code:200,status: true,mssage:"find is success",result:resObj};  
 
-
+       
     }
-
+    // 添加auth
     @POST("/add")
     async add(ctx,next){
-        var { name,url,status=1,g_name="默认分组",pid=1} = ctx.request.body;
-        // var res=g_id==1?1: await ctx.model.table("tk_auth_group").where({"gid":g_id}).findOne();
-        // if(!res) return ctx.body = await {code:"-1",status:false,mssage:"no auth group",result:""}
-        var validRes = await logicAuth.addAuth({name,url,g_name});
-        if (validRes) return ctx.body = await validRes;
+        var { name,identName,url,status=1,groupName=""} = ctx.request.body;
+        var validRes = await logicAuth.veryAuth({name,url,identName});
+        if (validRes) return ctx.body = await ctx.error(validRes);
         var options = {
-            name,url,status,g_name,
-            create_time:new Date().getTime(),
-            update_time:new Date().getTime()
+            name,identName,url,status,groupName,
+            createtime:new Date().getTime(),
+            updatetime:new Date().getTime()
         }
-        var resInsert =await ctx.model.table("tk_auth").thenAdd(options,{name,url,_logic: 'OR'})
-        if(resInsert.type=="exist"){
-            return ctx.body = await  ({code:-101,  state:false,mssage:"name or url  is exist",result:""});
+        try {
+            var resInsert =await ctx.model.table("tk_auth")
+            .thenAdd(options,{name,identName,url,_logic: 'OR'});
+
+            if(resInsert.type=="exist"){
+                return  ctx.body =await ctx.error("name or identName or url  is exist");          
+            }
+            return  ctx.body =await ctx.success("add is success");
+        } catch (error) {
+            return  ctx.body =await ctx.error(error);  
         }
-        return ctx.body = await  ({code:200,  state:true,mssage:"add is success",result:""});
+       
     }
 
-    @POST("/edit")
-    async edit(ctx,next){
-        var { name,url,status=1,g_name="默认分组",pid=1} = ctx.request.body;
+  
+     //编辑
+     @POST("/update")
+     async update(ctx,next){
+        var {id, name,identName,url,status,groupName} = ctx.request.body;
+        
+         if(!id){
+             return ctx.body = await {status:false,code:401,msg:"id  is required"}
+         }
+        // 数据验证
+         var validRes = await logicAuth.veryAuth({name,url,identName,groupName});
+        if (validRes) return ctx.body = await ctx.error(validRes);
 
+         try {
+            var res = await ctx.model.table("tk_auth").where({id})
+            .thenUpdate({name,identName,url,status,groupName,updatetime:new Date().getTime()},{id:["!=",id],__complex:{name,identName,url,_logic: 'OR'}});
+            
+            if(res.type=="exist"){
+                return  ctx.body =await ctx.error("name or identName or url  is exist"); 
+            }
+            return  ctx.body =await ctx.success("update is success");
+         } catch (error) {
+            return  ctx.body =await ctx.error(error);  
+         }
+     }
+    // 更新状态
+     @POST("/swtich")
+     async switch(ctx,next){
+         /**
+          * data {array} [a_id];
+          */
+         var {data=[]} = ctx.request.body;
+         try {
+           var res =await ctx.model.table("tk_auth").updateMany(data,{key:"id"});
+           return  ctx.body =await ctx.success({mssage:"update is success",data:res});
+         } catch (error) {
+            return  ctx.body =await ctx.error(error); 
+         }
+     }
+       //删除
+    @POST("/delete")
+    async delete(ctx,next){
+        var {id} = ctx.request.body;
+        if(!id){
+            return  ctx.body =await ctx.error("id  is required"); 
+        }
+        try {
+              //1.先查是否存在适合的删除数据 (id,status = 2|停用状态)    
+            var resfind = await ctx.model.table("tk_auth").where({id,status:2}).findOne();
+            if(!resfind) return  ctx.body =await ctx.error("detele is fail"); 
+
+            var resR =  await ctx.model.table("tk_role_auth").where({"t_id":id}).buildSql().delete();
+            var resT =   await ctx.model.table("tk_auth").where({id}).buildSql().delete();
+            // 执行事务（原子性）：
+            await ctx.model.transaction([resR,resT]);
+            return  ctx.body =await ctx.success({mssage:"detele is success",data:res});
+       
+        } catch (error) {
+            return  ctx.body =await ctx.error(error); 
+        }
     }
 }

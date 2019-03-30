@@ -1,4 +1,5 @@
 import model from "./model";
+import { createContext } from "vm";
 export default class index{
     // 分组统计标签 (根据article)
     static async getGroup(option={}){
@@ -6,13 +7,14 @@ export default class index{
         // select t.*,count(a.id)
         // from tk_tab_article as ta inner join tk_tab as t on t.id=ta.t_id inner join tk_article as a on a.id=ta.a_id where a.status=2
         // group by ta.t_id having t.status=1;
-        var {t_status,a_status} = option;
+        var {t_status=1,a_status=1} = option;
         var having = t_status==0?{}:(t_status?{"t.status":t_status}:{"t.status":1});
         var where = a_status==0?{}:(a_status?{"a.status":a_status}:{"a.status":1});
-        // 第一种方式
-        var res = await model.table("tk_tab as t").field("t.*,count(a.id) as count")
+        
+        // 默认是1， 全部是0
+        var res = await model.table("tk_tab as t").field("t.*,a.status as a_status,count(*) as count")
             .join([
-                {join:"right",table:"tk_tab_article as ta",on:"t.id =ta.t_id"},
+                {join:"left",table:"tk_tab_article as ta",on:"t.id =ta.t_id"},
                 {join:"left",table:"tk_article as a",on:"a.id =ta.a_id"},
             ] )
             .where(where)
@@ -20,21 +22,6 @@ export default class index{
             .having(having)
             .select();
         return await res;
-
-            // 第二种方式
-        // var coutSql = await model.table("tk_article as a").field("ta.t_id").join(
-        //     {join:"right",table:"tk_tab_article as ta",on:"a.id =ta.a_id"}
-        //    ).where(where).group("ta.t_id").count("a.id");
-        // var res =  await model.table("tk_tab as t").field(`t.*`).where(having).select();
-        // try {
-        //     res.forEach(element => {
-        //         var resCount =  coutSql.filter(ele=>ele.t_id==element.id);
-        //         element["count"] = resCount[0]?resCount[0].count:0;
-        //     })
-        //     return await res;
-        // } catch (error) {
-        //     return await {error:"serve is error",code:500}
-        // }
     }
     // 
     static async getGropUidTab(where={}){

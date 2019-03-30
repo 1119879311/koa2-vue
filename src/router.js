@@ -1,12 +1,10 @@
 import { resolve } from "path"
 import fs from "fs"
-let rootPath = process.cwd();
 let entryPath = process.env.NODE_ENV==="development"?"src":"dist";
-console.log(entryPath)
+console.log(process.env.NODE_ENV+"环境:执行目录"+entryPath)
 let ctrPath = resolve(entryPath,'controller');
-
 export default (app)=>{
-    function loadCtr(rootPaths){
+    let  loadCtr = (rootPaths)=>{
         try {
             var allfile = fs.readdirSync(rootPaths);   
             allfile.forEach((file)=>{
