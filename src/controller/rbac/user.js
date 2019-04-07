@@ -115,17 +115,19 @@ export  default class extends base {
      async delete(ctx,next){
          var {id} = ctx.request.body;
          if(!id) return  ctx.body =await ctx.error("id  is required"); 
-            
+          
           try {
                 //1.先查是否存在适合的删除数据 (id,status = 2|停用状态)    
             var resfind = await ctx.model.table("tk_user").where({id,status:2}).findOne();
-            if(!resfind) return ctx.body = await {code:-101, status:false,mssage:"正常状态无法删除",data:""};
-       
-            var resR =  await ctx.model.table("tk_user_role").where({"u_id":id}).delete();
-            var resT =   await ctx.model.table("tk_user").where({id}).delete();
+           
+            if(!resfind) return  ctx.body = await ctx.error("用户不存在或者处于正常状态无法删除");
+         
+            var resR =  await ctx.model.table("tk_user_role").where({"u_id":id}).buildSql().delete();
+            var resT =   await ctx.model.table("tk_user").where({id}).buildSql().delete();
                // 执行事务（原子性）：
-            await ctx.model.transaction([resR,resT]);
-            return  ctx.body =await ctx.success("detele is success")
+           var res= await ctx.model.transaction([resR,resT]);
+          
+            return  ctx.body =await ctx.success("detele is success");
          } catch (error) {
             return  ctx.body =await ctx.error(error); 
          }

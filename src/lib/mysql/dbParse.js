@@ -414,7 +414,7 @@ class parse extends hepler{
      * 参数一个：代表个数 
      * 参数两个：第一个代表页数，第二个代表个数(整数)，（如果第二个参数小于0，第一个参数为个数）
      */
-    parseLimit(opt,_defaultOffset=10){
+    parseLimit(opt){
         if(!opt) return '';
         var limitArr = [];
         if(this.isNumber(opt)){

@@ -121,13 +121,14 @@ export default class auth extends base{
             var resfind = await ctx.model.table("tk_auth").where({id,status:2}).findOne();
             if(!resfind) return  ctx.body =await ctx.error("detele is fail"); 
 
-            var resR =  await ctx.model.table("tk_role_auth").where({"t_id":id}).buildSql().delete();
+            var resR =  await ctx.model.table("tk_role_auth").where({"a_id":id}).buildSql().delete();
             var resT =   await ctx.model.table("tk_auth").where({id}).buildSql().delete();
             // 执行事务（原子性）：
             await ctx.model.transaction([resR,resT]);
-            return  ctx.body =await ctx.success({mssage:"detele is success",data:res});
+            return  ctx.body =await ctx.success("detele is success");
        
         } catch (error) {
+            console.log(error)
             return  ctx.body =await ctx.error(error); 
         }
     }

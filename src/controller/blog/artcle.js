@@ -22,11 +22,12 @@ export  default  class  {
     async index(ctx,next){      
    
        var option = ctx.request.query||{};
+      
         // 查单条article
        if(option.id){
             var res =  await articleModel.getArticleId(option);
             if(option.addRead&&res.status){ 
-                await ctx.model.table("tk_article").where({id:option.id}).update({"readcount":res.data.readcount+1})
+                await ctx.model.setInit().table("tk_article").where({id:option.id}).update({"readcount":res.data.readcount+1})
             }
             return ctx.body  = res
        }
@@ -83,18 +84,18 @@ export  default  class  {
 
    
     @POST("/add")
-    @userAuth.isRoleAuth()
     @userAuth.isUser()
+    @userAuth.isRoleAuth()
     async add(ctx,next){
         // 数据校验
-        var {title,content,cid,thumimg,remark,status=1,sort=100,tabList=[]} = ctx.request.body;
+        var {title,content,cid,thumimg,remark,status=1,tabList=[]} = ctx.request.body;
         var resVery = await logicArticle.veryAtricle({title,content,thumimg,remark,tabList});
         if (resVery)  return  ctx.body =await ctx.error(resVery);
         // 写入article数据 
         try {
            
             var resInsert = await ctx.model.table("tk_article").thenAdd({
-                title,content:content,cid,thumimg,remark,readcount:100,status,sort,createtime:(new Date().getTime()),
+                title,content:content,cid,thumimg,remark,readcount:100,status,createtime:(new Date().getTime()),
             },{title});
             
             if(resInsert.type=="exist"){
@@ -189,6 +190,7 @@ export  default  class  {
             await ctx.model.transaction([resR,resT]);          
             return  ctx.body =await ctx.success("detele is success");
          } catch (error) {
+             console.log(error)
             return  ctx.body =await ctx.error(error);
          }
      }

@@ -12,7 +12,7 @@ export default class index{
         var where = a_status==0?{}:(a_status?{"a.status":a_status}:{"a.status":1});
         
         // 默认是1， 全部是0
-        var res = await model.table("tk_tab as t").field("t.*,a.status as a_status,count(*) as count")
+        var res = await model.setInit().table("tk_tab as t").field("t.*,a.status as a_status,count(*) as count")
             .join([
                 {join:"left",table:"tk_tab_article as ta",on:"t.id =ta.t_id"},
                 {join:"left",table:"tk_article as a",on:"a.id =ta.a_id"},
@@ -21,7 +21,6 @@ export default class index{
             .group("ta.t_id")
             .having(having)
             .select();
-            console.log(res)
         return await res;
     }
     // 

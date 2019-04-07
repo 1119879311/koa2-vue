@@ -29,7 +29,7 @@ app.use(koaCors());
 // })
 app.use( async (ctx,next)=>{
     
-    console.log(ctx.headers.authorization)
+    // console.log(ctx.headers.authorization)
     process.on('uncaughtException',async (error) => { //捕获进程错误
         console.log('call uncaughtException handle');
         ctx.status = 500;

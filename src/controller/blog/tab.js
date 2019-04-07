@@ -7,7 +7,7 @@ export  default class{
     async  index(ctx,next){
         var {status} = ctx.request.query;
         var where =status==0?{}:{status};
-        var res = await ctx.model.clearOtions().table("tk_tab").where(where).select();
+        var res = await ctx.model.table("tk_tab").where(where).select();
         return  ctx.body =await ctx.success({data:res})
     }
     // 添加

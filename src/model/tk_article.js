@@ -4,14 +4,15 @@
 // left join tk_cate c on c.id = a.cid group by a.id ;
 import tabModel from "./tk_tab";
 import model from "./model";
+import mysql from "mysql"
 export default class index{
     /**
      * @param {object} option 
      */
     static async getCommon(option = {where:"",order:{id:"desc"},limit:""}){
         var {page,limit }=  option.limit;
-        option.order =  option.order==undefined ?{id:"desc"}:option.order;
-        return model.table("tk_article as a").noField("content").field("c.name as cname,c.status as cstatus")
+        option.order =  option.order==undefined ?`a.id desc`:`a.${option.order} desc`;
+         return model.setInit().table("tk_article as a").noField("content").field("c.name as cname,c.status as cstatus")
                 .join([{join:'left',table:"tk_cate as c",on:"c.id = a.cid"} ])
                 .where(option.where)
                 .order(option.order)
@@ -29,14 +30,14 @@ export default class index{
         var wheres = {"a.id":id};
         a_status!=0? wheres[`a.status`] = a_status:null;
         try {
-            var resInfo =  await model.table("tk_article as a").field("a.*,c.name as c_name,c.status as c_status").join({join:'left',table:"tk_cate as c",on:"c.id = a.cid"}).where(wheres).findOne();
+            var resInfo =  await model.setInit().table("tk_article as a").field("a.*,c.name as c_name,c.status as c_status").join({join:'left',table:"tk_cate as c",on:"c.id = a.cid"}).where(wheres).findOne();
 
             if(resInfo){
                 var tabWhere = is_tab==0?{a_id:id}:{a_id:id,status:is_tab};
-                resInfo["tab"]=resInfo["tab"] = await model.table("tk_tab").field("id,name,status").where(tabWhere).join({table:"tk_tab_article",join:"right",on:" id = t_id "}).select();
+                resInfo["tab"]=resInfo["tab"] = await model.setInit().table("tk_tab").field("id,name,status").where(tabWhere).join({table:"tk_tab_article",join:"right",on:" id = t_id "}).select();
                 // 找上一条 
-                var  nextInfo = await model.table("tk_article").field("id,title,status").where({id:[">",id],status:1}).limit("0,1").order({id:"asc"}).findOne();
-                var  prevInfo = await model.table("tk_article").field("id,title,status").where({id:["<",id],status:1}).limit("0,1").order({id:"desc"}).findOne();
+                var  nextInfo = await model.setInit().table("tk_article").field("id,title,status").where({id:[">",id],status:1}).limit("0,1").order({id:"asc"}).findOne();
+                var  prevInfo = await model.setInit().table("tk_article").field("id,title,status").where({id:["<",id],status:1}).limit("0,1").order({id:"desc"}).findOne();
                 resInfo['prevInfo'] = prevInfo;
                 resInfo['nextInfo'] = nextInfo;
                 var status = true;

@@ -10,7 +10,7 @@ export let db = {
     "mysql":{
         "host": "localhost",//主机名/ip
         "user": "root",//用户名
-        "password": "",//密码
+        "password": "root",//密码
         "port": 3306,//端口
         "database": "thinkjs" //连接的库
     }

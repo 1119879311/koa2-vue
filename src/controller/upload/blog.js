@@ -20,8 +20,14 @@ export  default  class extends base {
             var fields = res.fields;
             if (fields && fields.id && files[0].url){
                 var res = await ctx.model.table("tk_article").field("thumimg").where({id:fields.id}).findOne(); 
-                if(res){ //修改
-                    fs.unlinkSync(path.join(process.cwd(),stactPath, res.thumimg));//删除原来的img
+                if(res){ 
+                     //修改
+                    var filePath = path.join(process.cwd(), stactPath, res.thumimg);
+                    if(res.thumimg&&fs.existsSync(filePath)){
+                        if(fs.lstatSync(filePath).isFile()){
+                            await fs.unlinkSync(filePath); //删除原来的img
+                         }
+                    }
                     await ctx.model.table("tk_article").where({id:fields.id}).update({ thumimg:files[0].url});//更新图片;  
                 }
                 // 新增

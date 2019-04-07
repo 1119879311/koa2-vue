@@ -26,7 +26,6 @@ import heper from "./heper";
         return null;
     }
     async utilRole(ctx){
-       
         var {uid,isAdmin} = ctx.state.userInfo;
         if(isAdmin==1) return null;//如果是超级管理用户直接跳过；
 

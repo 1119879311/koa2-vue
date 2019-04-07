@@ -6,7 +6,7 @@ export  default class{
     @GET("/")
     async index(ctx,next){
         var {status} = ctx.request.query;
-        var res = await ctx.model.clearOtions().table("tk_cate").where({status}).select();
+        var res = await ctx.model.table("tk_cate").where({status}).select();
         return  ctx.body =await ctx.success({data:res,mssage:"select is success"});
     }
    
@@ -38,7 +38,6 @@ export  default class{
      async update(ctx,next){
         var {id,name,pid=0,sort=100} = ctx.request.body;
          if(!id||!name)  return ctx.body = await ctx.error("id or name is required");
-
          try {
             var res = await ctx.model.table("tk_cate").where({id})
             .thenUpdate({name,pid,sort},{id:["!=",id],name});
@@ -47,7 +46,7 @@ export  default class{
                 return  ctx.body =await ctx.error("name is exist");
                
            }else if(res.type=="update"){
-            return  ctx.body =await ctx.success({data:resInsert.id,mssage:"update is success"});
+            return  ctx.body =await ctx.success({data:res.id,mssage:"update is success"});
            }
            return  ctx.body =await ctx.error("update is fail");
 

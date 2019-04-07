@@ -4,7 +4,7 @@ export default new class {
         // title,content,thumimg,remark,tabList
         this.verytitle = Joi.string().required().error(new Error("title is must required"));
         this.verycontent = Joi.string().required().error(new Error("content is must required"));
-        this.verythumimg = Joi.string().required().error(new Error("thumimg  is must required"));
+        // this.verythumimg = Joi.string().required().error(new Error("thumimg  is must required"));
         this.veryremark = Joi.string().required().error(new Error("remark  is must required"));
         this.verytabList = Joi.array().error(new Error("tabList type is array"));
 
@@ -14,7 +14,7 @@ export default new class {
         var schema = Joi.object().keys({
             title:_this.verytitle ,
             content: _this.verycontent,
-            thumimg: _this.verythumimg,
+            // thumimg: _this.verythumimg,
             remark:_this.veryremark,
             tabList:_this.verytabList
         })
