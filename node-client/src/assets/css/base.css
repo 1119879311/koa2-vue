@@ -1,0 +1,36 @@
+*{padding: 0;margin: 0;box-sizing: border-box;}
+ul,li,ol{list-style: none;}
+a{text-decoration: none;}
+section,header,footer{display: block;}
+input,textarea,button,img{outline: none;}
+.col-12{padding:0 12px}
+.m-flex{display: flex;width: 100%}
+.m-flex.flex-wrap{flex-wrap: wrap}
+.img-respose{display: block;width: 100%;margin: auto;}
+.max-respose{display: block;max-width: 90%;margin: auto;}
+.m-flex>.f-col-5{width: 5%;}
+.m-flex>.f-col-10{width: 10%;}
+.m-flex>.f-col-15{width: 15%;}
+.m-flex>.f-col-20{width: 20%;}
+.m-flex>.f-col-24{width: 24%;}
+.m-flex>.f-col-25{width: 25%;}
+.m-flex>.f-col-30{width: 30%;}
+.m-flex>.f-col-33{width: 33.333%;}
+.m-flex>.f-col-35{width: 35%;}
+.m-flex>.f-col-40{width: 40%;}
+.m-flex>.f-col-45{width: 45%;}
+.m-flex>.f-col-48{width: 48%;}
+.m-flex>.f-col-50{width: 50%;}
+.m-flex>.f-col-55{width: 55%;}
+.m-flex>.f-col-60{width: 60%;}
+.m-flex>.f-col-65{width: 65%;}
+.m-flex>.f-col-70{width: 70%;}
+.m-flex>.f-col-75{width: 75%;}
+.m-flex>.f-col-80{width: 80%;}
+.m-flex>.f-col-85{width: 85%;}
+.m-flex>.f-col-90{width: 90%;}
+.m-flex>.f-col-95{width: 95%;}
+.m-flex>.f-col-auto{flex: 1;}
+.block-input{display: flex;justify-content: space-between;text-align: left;}
+.block-input .label-text{padding: 6px;}
+.block-input input[type="text"]{flex: 1; padding: 6px 8px;border-radius: 2px;outline: none;border: none;min-width: 180px;}
