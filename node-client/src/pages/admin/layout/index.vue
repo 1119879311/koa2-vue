@@ -107,5 +107,5 @@ body > .el-container {
 }
 .content-views{padding-left:20px;padding-top: 45px }
 .table-contain{margin-top: 24px;max-height: 450px;overflow-y: scroll}
-.my-tab-class{position: absolute;left: 10px;top: 0;z-index: 2000;right: 10px;background: #fff}
+.my-tab-class{position: fixed;left: 208px;top: 60px;z-index: 2000;right: 10px;background: #fff}
 </style>

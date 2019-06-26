@@ -60,6 +60,6 @@ export default {
 <style>
  .ue{min-height: 400px}
  .ue .w-e-text-container{min-height: 400px}
- .ue .w-e-text-container,.ue .w-e-menu{z-index: 100!important;}
+ /* .ue .w-e-text-container,.ue .w-e-menu{z-index: 9999900!important;} */
 </style>
 
