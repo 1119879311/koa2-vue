@@ -8,6 +8,7 @@
                 <span> 分类: <router-link tag="a" :to="{path:'/index',query:{cid:articleData.cid}}">{{articleData.c_name}}</router-link></span>&nbsp;&nbsp;</p>
             </div>
             <!-- <div class="article-thuming" v-if="articleData.thumimg"> <img :src="articleData.thumimg"  :onerror="errorImg"  class="max-respose"></div> -->
+            <!-- <div class="article-remark">{{articleData.remark}}</div> -->
             <div class="article-comtents" v-html="articleData.content" v-highlight> </div>
             <div class="article-tab">标签：
                 <el-tag v-for="(tabItme,index) in articleData.tab" :key="index"><router-link tag="a" :to="{path:'/index',query:{tid:tabItme.id}}" >{{tabItme.name}}</router-link></el-tag>
@@ -56,7 +57,9 @@ export default {
 }
 </script>
 <style>
-.detail-view pre{background: #23241f;overflow:auto;font-family: Arial, Helvetica, sans-serif;width:100%; padding: 12px; border-radius: 8px;font-weight: 700;font-size: 16px;line-height:28px;margin:10px auto;box-shadow: 0px 0px 10px #000;}
+.detail-view pre{background: #23241f;overflow:auto;font-family: Arial, Helvetica, sans-serif;width:100%; padding: 12px; border-radius: 4px;
+font-weight: 700;font-size: 16px;line-height:28px;margin:10px auto;box-shadow: 0px 0px 10px #000;
+border-left: 10px #19ccbb solid;}
 .detail-view .content-main{width: 96%;max-width: 1250px;margin:0px auto;padding: 30px 0}
 .detail-view .article-title{text-align: center}
 .detail-view .article-title .title{font-size: 24px;color: #009688;line-height: 36px;border-bottom: 1px solid #eee}
@@ -64,6 +67,7 @@ export default {
 .detail-view .article-title p span{padding-left:15px}
 .detail-view .article-title p a{color: rgb(244, 150, 3)}
 .detail-view .article-title p a:hover{color: #008678}
+.detail-view .article-remark{font-size: 18px;color: #333;margin: 20px 0;text-indent: 2em;line-height: 28px}
 .detail-view .article-thuming{width: 100%;overflow: hidden;cursor: pointer;margin: 20px auto}
 .detail-view .article-thuming img{transition:  all 0.5s;max-width: 600px;display: block;margin: 10px auto;box-shadow: 2px 2px 20px #333;}
 .detail-view .article-tab{margin: 12px auto}
