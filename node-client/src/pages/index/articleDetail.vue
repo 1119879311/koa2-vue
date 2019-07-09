@@ -1,6 +1,6 @@
 <template>
   <div class="detail-view">
-       <div class="content-main" v-if="status">
+       <div class="content-main" v-if="articleData">
            <div class="article-title">
                 <h3 class="title">{{articleData.title}}</h3>
                 <p><span> 发布时间: {{articleData.createtime|dataFormat}}</span>&nbsp;&nbsp;
@@ -19,9 +19,9 @@
                 <p v-if="articleData.nextInfo" class="p-right">下一篇:<router-link tag="a" :to="{name:'articleDetail',params:{id:articleData.nextInfo.id}}"> {{articleData.nextInfo.title}}</router-link></p>
             </div>
        </div>
-         <!-- <div class="no-data" v-else>
-            <p>{{nodata}}</p>
-        </div> -->
+         <div class="no-data" v-else>
+            <p>暂无数据</p>
+        </div>
   </div>
 </template>
 <script>
@@ -29,9 +29,7 @@ export default {
     data(){
         return {
              errorImg:'this.src="'+require('@/assets/images/silder.jpg')+'"',
-             status:false,
              articleData:{},
-             nodata:""
         }
     },
     watch:{
@@ -43,11 +41,8 @@ export default {
         getDetail(id){
             if(!id) return false;
              this.$axios.GET("blogDetail",{id,is_tab:1,addRead:true}).then(res=>{
-                 var data = res.data;
-                 this.status = data.status;
-                if(data.status){
-                  this.articleData = data.data;
-                }
+                 this.articleData = res.data.data;
+               
             })
         }
     },
@@ -60,7 +55,8 @@ export default {
 .detail-view pre{background: #23241f;overflow:auto;font-family: Arial, Helvetica, sans-serif;width:100%; padding: 12px; border-radius: 4px;
 font-weight: 700;font-size: 16px;line-height:28px;margin:10px auto;box-shadow: 0px 0px 10px #000;
 border-left: 10px #19ccbb solid;}
-.detail-view .content-main{width: 96%;max-width: 1250px;margin:0px auto;padding: 30px 0}
+.detail-view .no-data{width: 96%;max-width: 1250px;color:  #999;font-size: 20px;padding: 20px;text-align: center;box-shadow: 0px 1px 0  #999;margin: 20px auto}
+.detail-view .content-main{font-family: inherit !important;font-style: inherit;width: 96%;max-width: 1250px;margin:0px auto;padding: 30px 20px;background-color: rgba(255,255,255,.5);box-shadow: 1px 2px 6px rgba(63,74,105,.16); border-radius: 3px;}
 .detail-view .article-title{text-align: center}
 .detail-view .article-title .title{font-size: 24px;color: #009688;line-height: 36px;border-bottom: 1px solid #eee}
 .detail-view .article-title p{line-height: 28px;color: #666;margin:10px auto}
@@ -74,7 +70,6 @@ border-left: 10px #19ccbb solid;}
 .detail-view .article-tab .el-tag{margin-right: 12px}
 .article-comtents{color: #666;line-height: 28px;font-size: 14px;width: 100%;word-wrap: break-word}
 .article-comtents table td{border: 1px solid #eee;padding: 8px;line-height: 28px;}
-.no-data{text-align: center;color:  #999;font-size: 20px;padding: 20px;margin: 20px auto;box-shadow: 0px 3px 2px #999}
 .next-prev-info{margin: 10px auto;overflow: hidden}
 .next-prev-info .p-left{float: left}
 .next-prev-info .p-right{float: right}
@@ -87,6 +82,7 @@ border-left: 10px #19ccbb solid;}
     margin:6px auto;
 }
 @media screen and (max-width: 768px) {
+    .detail-view .content-main{padding: 30px 10px}
     .detail-view .article-title .title{font-size: 16px}
     .detail-view .article-title p{font-size: 14px}
     .next-prev-info p.p-left,.next-prev-info p.p-right{float:none !important}

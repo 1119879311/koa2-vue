@@ -6,7 +6,6 @@ module.exports = class {
     static async findRoleAuth(r_id=''){
         return  model.select({table:"tk_role_auth as ra",field:"a.groupName,ra.a_id",
         where:{"a.status":1,"ra.r_id":r_id},join:{table:"tk_auth as a",join:"left",on:"a.id=ra.a_id"}})
-        table("tk_role_auth as ra");
     }
     // 根据状态查所有权限行为
     static async findAll(status){
